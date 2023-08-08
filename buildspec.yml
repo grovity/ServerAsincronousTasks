@@ -10,7 +10,7 @@ phases:
   build:
     commands:
       - echo Building Docker image...
-      - - docker build -t 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest --build-arg AWS_DR=us-east-1
+      - docker build -t 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest --build-arg AWS_DR=us-east-1
   post_build:
     commands:
       - echo Pushing Docker image to repository...
