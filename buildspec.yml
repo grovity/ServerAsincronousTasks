@@ -5,20 +5,20 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
-      
 
   build:
     commands:
       - echo Building Docker image...
-      - docker build -t 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest .
+      - docker build -t asynchronous-tasks:latest .
+
   post_build:
     commands:
       - echo Pushing Docker image to repository...
       - docker tag asynchronous-tasks:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
       - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
       - echo Writing the image details to imagedefinitions.json...
-      - printf '[{"name":"tu-nombre-de-servicio","imageUri":"%s"}]' $CODEBUILD_RESOLVED_SOURCE_VERSION > imagedefinitions.json
+      - printf '[{"name":"web","imageUri":"%s"}]' 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest > imagedefinitions.json
 
 artifacts:
-  files: 
+  files:
     - imagedefinitions.json
