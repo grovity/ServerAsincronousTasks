@@ -15,8 +15,8 @@ phases:
   post_build:
     commands:
       - echo Pushing Docker image to repository...
-      - docker tag asynchronous-tasks:latest tu-repo-url/asynchronous-tasks:latest
-      - docker push tu-repo-url/asynchronous-tasks:latest
+      - docker tag asynchronous-tasks:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
+      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
       - echo Writing the image details to imagedefinitions.json...
       - printf '[{"name":"tu-nombre-de-servicio","imageUri":"%s"}]' $CODEBUILD_RESOLVED_SOURCE_VERSION > imagedefinitions.json
 
