@@ -17,7 +17,7 @@ phases:
       - echo Build started on `date`
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:latest --build-arg AWS_DR=$DEFAULT_REGION --build-arg DSM=$DSM --build-arg AWS_SAKE=$SECRET_ACCESS_KEY --build-arg AWS_AKID=$ACCESS_KEY_ID --build-arg AWS_SBN=$STORAGE_BUCKET_NAME --build-arg AWS_SBNS=$AWS_STORAGE_BUCKET_NAME_STATIC --build-arg AWS_SBNM=$AWS_STORAGE_BUCKET_NAME_MEDIA  --build-arg TS=$TOKEN_SIGNATURIT --build-arg SK=$SECRET_KEY --build-arg DATABASE_URL_ARG=$DATABASE_URL_ARG .
+      - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$BRANCH_NAME
   post_build:
