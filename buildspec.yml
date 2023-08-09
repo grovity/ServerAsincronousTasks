@@ -7,29 +7,54 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws --version
       - $(aws ecr get-login --region us-east-1 --no-include-email)
-      - 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks-master
+      - REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks-master
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
-
+      - echo "master"
+      - echo "$ENVIRONMENT_NAME"
       - echo Build started on `date`
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks .
-      - docker tag 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:$IMAGE_TAG
-      - docker tag 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master
+      - docker build -t $REPOSITORY_URI:latest --build-arg AWS_DR=$DEFAULT_REGION --build-arg DSM=$DSM --build-arg AWS_SAKE=$SECRET_ACCESS_KEY --build-arg AWS_AKID=$ACCESS_KEY_ID --build-arg AWS_SBN=$STORAGE_BUCKET_NAME --build-arg AWS_SBNS=$AWS_STORAGE_BUCKET_NAME_STATIC --build-arg AWS_SBNM=$AWS_STORAGE_BUCKET_NAME_MEDIA  --build-arg TS=$TOKEN_SIGNATURIT --build-arg SK=$SECRET_KEY --build-arg DATABASE_URL_ARG=$DATABASE_URL_ARG .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$BRANCH_NAME
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
-      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:$IMAGE_TAG
-      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI:$BRANCH_NAME
       - echo Writing image definitions file...
-      - printf '[{"name":"%s","imageUri":"%s"}]' grovity-back-$ENVIRONMENT_NAME 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master > imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' grovity-back-$ENVIRONMENT_NAME $REPOSITORY_URI:$BRANCH_NAME > imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
 
 
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
+
+  build:
+    commands:
+      - echo Building Docker image...
+      - docker build -t asynchronous-tasks:latest .
+
+  post_build:
+    commands:
+      - echo Pushing Docker image to repository...
+      - docker tag asynchronous-tasks:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
+      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
+      - echo Writing the image details to imagedefinitions.json...
+      - printf '[{"name":"web","imageUri":"%s"}]' 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
