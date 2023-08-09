@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.11.2-slim-buster
+FROM 235640865704.dkr.ecr.us-east-1.amazonaws.com/grovity-python-3-7
 
 # set work directory
 WORKDIR /usr/src/app
