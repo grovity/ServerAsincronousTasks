@@ -16,7 +16,7 @@ phases:
       - echo Build started on `date`
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
+      - docker build -t 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks .
       - docker tag 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:$IMAGE_TAG
       - docker tag 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master
   post_build:
