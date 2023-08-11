@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.11.2-slim-buster
+FROM public.ecr.aws/lambda/python:3.10.2023.08.02.10
 
 # set work directory
 WORKDIR /usr/src/app
