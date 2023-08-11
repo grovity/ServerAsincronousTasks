@@ -1,27 +1,34 @@
 version: 0.2
 
+
 phases:
-  install:
-    runtime-versions:
-      python: 3.9
-    commands:
-      - echo Installing AWS CLI
-      - pip install awscli
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 235640865704.dkr.ecr.us-east-1.amazonaws.com
+      - aws --version
+      - $(aws ecr get-login --region us-east-1 --no-include-email)
+      - REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
-      - echo Building Docker images...
-      - docker-compose -f docker-compose.yml build
+      - echo "master"
+      - echo "$ENVIRONMENT_NAME"
+      - echo Build started on `date`
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:master
   post_build:
     commands:
-      - echo Tagging Docker images...
-      - docker tag web:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/web:latest
-      - docker tag worker:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/worker:latest
-      - docker tag dashboard:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/dashboard:latest
-      - echo Pushing Docker images to Amazon ECR...
-      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/web:latest
-      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/worker:latest
-      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/dashboard:latest
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI:master
+      - echo Writing image definitions file...
+      - printf '[{"name":"%s","imageUri":"%s"}]' asynchronous_tasks $REPOSITORY_URI:master > imagedefinitions.json
+      - cat imagedefinitions.json
+artifacts:
+    files: imagedefinitions.json
