@@ -7,6 +7,11 @@ services:
     ports:
       - 8004:8000
     command: uvicorn main:app --host 0.0.0.0 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - ./project:/usr/src/app
     environment:
