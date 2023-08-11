@@ -21,8 +21,6 @@ phases:
       - docker tag web:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/web:latest
       - docker tag worker:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/worker:latest
       - docker tag dashboard:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/dashboard:latest
-  upload_artifacts:
-    commands:
       - echo Pushing Docker images to Amazon ECR...
       - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/web:latest
       - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/worker:latest
