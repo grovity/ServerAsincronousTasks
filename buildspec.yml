@@ -28,7 +28,7 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - docker push $REPOSITORY_URI:master
       - echo Writing image definitions file...
-      - printf '[{"name":"%s","imageUri":"%s"}]' asynchronous-service $REPOSITORY_URI:master > imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:master > imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
