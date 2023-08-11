@@ -19,4 +19,4 @@ RUN pip install -r requirements.txt
 # copy project
 COPY . .
 
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "project/main:app", "--host", "0.0.0.0", "--reload"]
