@@ -1,5 +1,5 @@
 # pull official base image
-FROM public.ecr.aws/lambda/python:3.10.2023.08.02.10
+FROM public.ecr.aws/docker/library/python:3.11.4
 
 # set work directory
 WORKDIR /usr/src/app
