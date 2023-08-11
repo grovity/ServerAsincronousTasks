@@ -32,3 +32,33 @@ phases:
       - cat imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
+
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+    commands:
+      - echo Installing AWS CLI
+      - pip install awscli
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 235640865704.dkr.ecr.us-east-1.amazonaws.com
+  build:
+    commands:
+      - echo Building Docker images...
+      - docker-compose -f docker-compose.yml build
+  post_build:
+    commands:
+      - echo Tagging Docker images...
+      - docker tag web:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/web:latest
+      - docker tag worker:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/worker:latest
+      - docker tag dashboard:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/dashboard:latest
+  upload_artifacts:
+    commands:
+      - echo Pushing Docker images to Amazon ECR...
+      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/web:latest
+      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/worker:latest
+      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/dashboard:latest
