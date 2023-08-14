@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from celery import Celery
 from pydantic import BaseModel
-from project.worker import create_task,transfer
+from .worker import create_task,transfer
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")

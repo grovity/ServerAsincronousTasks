@@ -1,2 +1,2 @@
 #!/bin/bash
-uvicorn project.main:app --host 0.0.0.0 --port 8004
+uvicorn main:app --host 0.0.0.0 --port 8004

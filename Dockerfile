@@ -20,4 +20,4 @@ COPY start_web.sh start_worker.sh start_dashboard.sh ./
 RUN chmod +x start_web.sh start_worker.sh start_dashboard.sh
 
 EXPOSE 8004/tcp
-EXPOSE 5555/tcp
+EXPOSE 5556/tcp

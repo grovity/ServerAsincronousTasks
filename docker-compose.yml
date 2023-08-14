@@ -3,13 +3,10 @@ version: '3.8'
 services:
 
   web:
-    build:
-      context: ./project
-      dockerfile: Dockerfile
-      args:
-        SERVICE_TYPE: "web"
+    build: ./project
     ports:
       - 8004:8000
+    command: uvicorn main:app --host 0.0.0.0 --reload
     volumes:
       - ./project:/usr/src/app
     environment:
@@ -17,14 +14,10 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
-    entrypoint: ["./start_web.sh"]
 
   worker:
-    build:
-      context: ./project
-      dockerfile: Dockerfile
-      args:
-        SERVICE_TYPE: "worker"
+    build: ./project
+    command: celery -A worker.celery worker --loglevel=info --logfile=logs/celery.log
     volumes:
       - ./project:/usr/src/app
     environment:
@@ -33,17 +26,13 @@ services:
     depends_on:
       - web
       - redis
-    entrypoint: ["./start_worker.sh"]
 
   redis:
     image: redis:7
 
   dashboard:
-    build:
-      context: ./project
-      dockerfile: Dockerfile
-      args:
-        SERVICE_TYPE: "dashboard"
+    build: ./project
+    command: celery --broker=redis://redis:6379/0 flower --port=5555
     ports:
       - 5556:5555
     environment:
@@ -53,4 +42,3 @@ services:
       - web
       - redis
       - worker
-    entrypoint: ["./start_dashboard.sh"]
