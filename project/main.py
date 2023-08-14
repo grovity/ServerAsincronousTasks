@@ -5,18 +5,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from celery import Celery
 from pydantic import BaseModel
-import os
-
-current_folder = os.path.dirname(os.path.abspath(__file__))
-with os.scandir(current_folder) as entries:
-        print(f"Contenido de la carpeta '{current_folder}':")
-        for entry in entries:
-            print(entry.name)
-
 from .worker import create_task,transfer
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="project/static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
