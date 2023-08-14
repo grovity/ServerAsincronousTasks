@@ -13,7 +13,7 @@ with os.scandir(current_folder) as entries:
         for entry in entries:
             print(entry.name)
 
-from worker import create_task,transfer
+from .worker import create_task,transfer
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
