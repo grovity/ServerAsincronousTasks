@@ -6,14 +6,10 @@ services:
     build:
       context: ./project
       dockerfile: Dockerfile
+      args:
+        SERVICE_TYPE: "web"
     ports:
       - 8004:8000
-    entrypoint: ["uvicorn", "project.main:app", "--host", "0.0.0.0", "--reload"]
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     volumes:
       - ./project:/usr/src/app
     environment:
@@ -26,7 +22,8 @@ services:
     build:
       context: ./project
       dockerfile: Dockerfile
-    command: celery -A worker.celery worker --loglevel=info --logfile=logs/celery.log
+      args:
+        SERVICE_TYPE: "worker"
     volumes:
       - ./project:/usr/src/app
     environment:
@@ -43,7 +40,8 @@ services:
     build:
       context: ./project
       dockerfile: Dockerfile
-    command: celery --broker=redis://redis:6379/0 flower --port=5555
+      args:
+        SERVICE_TYPE: "dashboard"
     ports:
       - 5556:5555
     environment:
