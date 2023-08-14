@@ -16,10 +16,8 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY start_services.sh .
-RUN chmod +x start_services.sh
+COPY start_web.sh start_worker.sh start_dashboard.sh ./
+RUN chmod +x start_web.sh start_worker.sh start_dashboard.sh
 
 EXPOSE 8004/tcp
-EXPOSE 5556/tcp
-
-CMD ["./start_services.sh"]
+EXPOSE 5555/tcp

@@ -17,6 +17,7 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
+    entrypoint: ["./start_web.sh"]
 
   worker:
     build:
@@ -32,6 +33,7 @@ services:
     depends_on:
       - web
       - redis
+    entrypoint: ["./start_worker.sh"]
 
   redis:
     image: redis:7
@@ -51,3 +53,4 @@ services:
       - web
       - redis
       - worker
+    entrypoint: ["./start_dashboard.sh"]
