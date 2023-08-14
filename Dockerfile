@@ -2,7 +2,7 @@
 FROM public.ecr.aws/docker/library/python:3.11.4
 
 # set work directory
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/project
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -16,8 +16,8 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY ./project /usr/src/app/
+COPY . .
 
 EXPOSE 8004/tcp
 
-CMD ["uvicorn", "project.main:app", "--host", "0.0.0.0", "--port", "8004"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004"]
