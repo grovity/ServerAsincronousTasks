@@ -20,18 +20,13 @@ phases:
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:master
 
-      - docker build -t $REPOSITORY_URI:worker -f Dockerfile.worker .
-      - docker build -t $REPOSITORY_URI:dashboard -f Dockerfile.dashboard .
-
       - echo Pushing the Docker images...
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - docker push $REPOSITORY_URI:master
-      - docker push $REPOSITORY_URI:worker
-      - docker push $REPOSITORY_URI:dashboard
 
       - echo Writing image definitions file...
-      - printf '[{"name":"%s","imageUri":"%s"},{"name":"worker","imageUri":"%s"},{"name":"dashboard","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:master $REPOSITORY_URI:worker $REPOSITORY_URI:dashboard > imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:master > imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
