@@ -1,6 +1,5 @@
 version: 0.2
 
-
 phases:
   pre_build:
     commands:
@@ -10,16 +9,23 @@ phases:
       - REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      - SERVICE_TYPE=web # Set the default service type to "web"
   build:
     commands:
       - echo "master"
       - echo "$ENVIRONMENT_NAME"
       - echo Build started on `date`
-      - echo Build started on `date`
-      - echo Building the Docker image...
+
+      # Build web service
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:master
+
+      # Build worker service
+      - SERVICE_TYPE=worker docker build -t $REPOSITORY_URI:worker .
+
+      # Build dashboard service
+      - SERVICE_TYPE=dashboard docker build -t $REPOSITORY_URI:dashboard .
   post_build:
     commands:
       - echo Build completed on `date`
@@ -27,8 +33,11 @@ phases:
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - docker push $REPOSITORY_URI:master
+      - docker push $REPOSITORY_URI:worker
+      - docker push $REPOSITORY_URI:dashboard
+
       - echo Writing image definitions file...
-      - printf '[{"name":"%s","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:master > imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"},{"name":"worker","imageUri":"%s"},{"name":"dashboard","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:master $REPOSITORY_URI:worker $REPOSITORY_URI:dashboard > imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
