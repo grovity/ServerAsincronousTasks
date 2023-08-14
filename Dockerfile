@@ -19,7 +19,7 @@ RUN pip install -r requirements.txt
 COPY . .
 
 EXPOSE 8004/tcp
-EXOISE 5555/tcp
+EXPOSE 5555/tcp
 
 CMD if [ "$SERVICE_TYPE" = "web" ]; then \
         uvicorn project.main:app --host 0.0.0.0 --port 8004; \
