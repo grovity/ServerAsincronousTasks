@@ -23,9 +23,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-from configuration_interfaces import DriveConfig, SystemConfig, APIConfigBase
+from .configuration_interfaces import DriveConfig, SystemConfig, APIConfigBase
 
-from drive_api_exception import DriveAPIException
+from .drive_api_exception import DriveAPIException
 
 log = logging.getLogger('app')
 S = TypeVar("S", bound=APIConfigBase)
