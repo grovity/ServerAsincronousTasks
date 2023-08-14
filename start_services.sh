@@ -8,4 +8,5 @@ elif [ "$SERVICE_TYPE" = "dashboard" ]; then
     celery --broker=redis://redis:6379/0 flower --port=5555
 else
     echo "Invalid service type"
+    echo "$SERVICE_TYPE"
 fi
