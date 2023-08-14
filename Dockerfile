@@ -18,6 +18,6 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 8004/tcp
+# EXPOSE 8004/tcp - No es necesario aquí, ya está en el docker-compose.yml
 
-CMD ["uvicorn", "project.main:app", "--host", "0.0.0.0", "--port", "8004"]
+# CMD será especificado en el docker-compose.yml

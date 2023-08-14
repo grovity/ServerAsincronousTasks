@@ -3,10 +3,12 @@ version: '3.8'
 services:
 
   web:
-    build: ./project
+    build:
+      context: ./project
+      dockerfile: Dockerfile
     ports:
       - 8004:8000
-    entrypoint: ["uvicorn", "project.main:app", "--host", "0.0.0.0", "--reload"]  # Agregado el entrypoint
+    entrypoint: ["uvicorn", "project.main:app", "--host", "0.0.0.0", "--reload"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000"]
       interval: 10s
@@ -21,7 +23,9 @@ services:
       - redis
 
   worker:
-    build: ./project
+    build:
+      context: ./project
+      dockerfile: Dockerfile
     command: celery -A worker.celery worker --loglevel=info --logfile=logs/celery.log
     volumes:
       - ./project:/usr/src/app
@@ -36,7 +40,9 @@ services:
     image: redis:7
 
   dashboard:
-    build: ./project
+    build:
+      context: ./project
+      dockerfile: Dockerfile
     command: celery --broker=redis://redis:6379/0 flower --port=5555
     ports:
       - 5556:5555
