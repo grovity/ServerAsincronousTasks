@@ -2,7 +2,7 @@
 FROM public.ecr.aws/docker/library/python:3.11.4
 
 # set work directory
-WORKDIR /usr/src/app/project
+WORKDIR /usr/src/app
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
