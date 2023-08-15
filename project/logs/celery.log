@@ -4187,13 +4187,3 @@ Arguments: (<MaybeEncodingError: Error sending result: ''(1, <ExceptionInfo: Dri
 [2023-07-28 14:57:15,570: WARNING/ForkPoolWorker-7]  62%|######2   | 566M/906M [04:09<01:42, 3.30MiB/s]
 [2023-07-28 14:57:15,687: WARNING/ForkPoolWorker-7]  63%|######2   | 567M/906M [04:09<01:46, 3.20MiB/s]
 [2023-07-28 14:57:26,133: WARNING/ForkPoolWorker-7]  63%|######2   | 567M/906M [04:20<01:46, 3.20MiB/s]
-[2023-08-14 22:42:08,258: INFO/MainProcess] Connected to redis://redis:6379/0
-[2023-08-14 22:42:08,266: INFO/MainProcess] mingle: searching for neighbors
-[2023-08-14 22:42:09,280: INFO/MainProcess] mingle: all alone
-[2023-08-14 22:42:09,294: INFO/MainProcess] celery@494f8ca966f3 ready.
-[2023-08-14 22:42:13,477: INFO/MainProcess] Events of group {task} enabled by remote.
-[2023-08-14 22:42:38,301: INFO/MainProcess] Connected to redis://redis:6379/0
-[2023-08-14 22:42:38,311: INFO/MainProcess] mingle: searching for neighbors
-[2023-08-14 22:42:39,326: INFO/MainProcess] mingle: all alone
-[2023-08-14 22:42:39,341: INFO/MainProcess] celery@494f8ca966f3 ready.
-[2023-08-14 22:42:43,564: INFO/MainProcess] Events of group {task} enabled by remote.
