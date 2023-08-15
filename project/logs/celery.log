@@ -4202,3 +4202,23 @@ Arguments: (<MaybeEncodingError: Error sending result: ''(1, <ExceptionInfo: Dri
 [2023-08-15 16:55:17,506: INFO/MainProcess] mingle: all alone
 [2023-08-15 16:55:17,533: INFO/MainProcess] celery@b66bc5cbcbed ready.
 [2023-08-15 16:55:21,655: INFO/MainProcess] Events of group {task} enabled by remote.
+[2023-08-15 17:09:10,568: INFO/MainProcess] Connected to redis://redis:6379/0
+[2023-08-15 17:09:10,572: INFO/MainProcess] mingle: searching for neighbors
+[2023-08-15 17:09:11,584: INFO/MainProcess] mingle: all alone
+[2023-08-15 17:09:11,599: INFO/MainProcess] celery@b66bc5cbcbed ready.
+[2023-08-15 17:09:15,610: INFO/MainProcess] Events of group {task} enabled by remote.
+[2023-08-15 17:14:48,302: INFO/MainProcess] Connected to redis://redis:6379/0
+[2023-08-15 17:14:48,308: INFO/MainProcess] mingle: searching for neighbors
+[2023-08-15 17:14:49,323: INFO/MainProcess] mingle: all alone
+[2023-08-15 17:14:49,341: INFO/MainProcess] celery@ce13a71d7477 ready.
+[2023-08-15 17:14:53,277: INFO/MainProcess] Events of group {task} enabled by remote.
+[2023-08-15 17:22:59,874: INFO/MainProcess] Connected to redis://redis:6379/0
+[2023-08-15 17:22:59,882: INFO/MainProcess] mingle: searching for neighbors
+[2023-08-15 17:23:00,893: INFO/MainProcess] mingle: all alone
+[2023-08-15 17:23:00,910: INFO/MainProcess] celery@c1b3378fff7b ready.
+[2023-08-15 17:23:04,736: INFO/MainProcess] Events of group {task} enabled by remote.
+[2023-08-15 17:25:27,801: INFO/MainProcess] Connected to redis://redis:6379/0
+[2023-08-15 17:25:27,805: INFO/MainProcess] mingle: searching for neighbors
+[2023-08-15 17:25:28,818: INFO/MainProcess] mingle: all alone
+[2023-08-15 17:25:28,835: INFO/MainProcess] celery@8241e700ef00 ready.
+[2023-08-15 17:25:33,005: INFO/MainProcess] Events of group {task} enabled by remote.

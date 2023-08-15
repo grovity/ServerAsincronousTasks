@@ -1,5 +1,5 @@
 from celery import Celery
-from time import time
+from time import sleep
 from functions import request_zoom,obt_video_evento,upload
 import os
 # Configuración de Celery
@@ -8,7 +8,6 @@ celery = Celery('tasks', broker='redis://localhost:6379/0')
 # Definición de la función para la tarea Celery
 @celery.task
 def transfer(id_reu):
-    start_time = time()
     try:
         print(f"Descargando reunión {id_reu}")
         obt_video_evento(id_reu)
@@ -24,8 +23,4 @@ def transfer(id_reu):
         f.close()
         print(e)
         raise
-
-    end_time = time()
-    duration = end_time - start_time
-
-    return f"La duración de la ejecución fue de {duration} segundos."
+    return f"Ejecución finalizada"

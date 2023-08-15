@@ -10,19 +10,14 @@ ENV PYTHONUNBUFFERED 1
 ENV API_SECRET_ZOOM "p2juMvG4ifA9x8StadY1lixePaH7Z7nMQuNy"
 ENV API_KEY_ZOOM "UEd0Za_eTvq2AC1fC5E-dQ"
 ENV USER_ZOOM "servidorgenie@gmail.com"
- 
+
 # install dependencies
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
-RUN apt-get update && apt-get install -y openssh-server
-RUN echo 'root:Imuko$4587' | chpasswd
-RUN mkdir /var/run/sshd
 
 COPY . .
 
-EXPOSE 8004/tcp
 EXPOSE 5556/tcp
-EXPOSE 22
 
-#CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004"]
+CMD ["celery", "--broker=redis://redis:6379/0", "flower", "--port=5556"]
