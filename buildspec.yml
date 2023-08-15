@@ -40,9 +40,9 @@ phases:
       - docker push $REPOSITORY_URI:web
 
       # Writing image definitions file
-      - printf '[{"name":"%s","imageUri":"%s"}]' web-task $REPOSITORY_URI:web-master > imagedefinitions.json
-      - printf '[{"name":"%s","imageUri":"%s"}]' worker-task $REPOSITORY_URI:worker-master >> imagedefinitions.json
-      - printf '[{"name":"%s","imageUri":"%s"}]' dashboard-task $REPOSITORY_URI:dashboard-master >> imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' web-service $REPOSITORY_URI:web-master > imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' worker-service $REPOSITORY_URI:worker-master >> imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' dashboard-service $REPOSITORY_URI:dashboard-master >> imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
