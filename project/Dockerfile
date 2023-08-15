@@ -24,4 +24,4 @@ EXPOSE 8004/tcp
 EXPOSE 5556/tcp
 EXPOSE 22/tcp
 
-CMD ["uvicorn", "project.main:app", "--host", "0.0.0.0", "--port", "8004"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004"]

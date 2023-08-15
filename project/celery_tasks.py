@@ -1,6 +1,6 @@
 from celery import Celery
 from time import time
-from .functions import request_zoom,obt_video_evento,upload
+from functions import request_zoom,obt_video_evento,upload
 import os
 # Configuración de Celery
 celery = Celery('tasks', broker='redis://localhost:6379/0')
