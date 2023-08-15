@@ -32,12 +32,13 @@ phases:
       - echo Build completed on `date`
 
       # Push images to ECR
-      - docker push $REPOSITORY_URI:web
+      
       - docker push $REPOSITORY_URI:worker
       - docker push $REPOSITORY_URI:dashboard
       - docker push $REPOSITORY_URI:web-$IMAGE_TAG
       - docker push $REPOSITORY_URI:worker-$IMAGE_TAG
       - docker push $REPOSITORY_URI:dashboard-$IMAGE_TAG
+      - docker push $REPOSITORY_URI:web
 
       # Writing image definitions file
       - printf '[{"name":"%s-web","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:web-master > imagedefinitions.json
