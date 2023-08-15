@@ -1,6 +1,5 @@
 version: 0.2
 
-
 phases:
   pre_build:
     commands:
@@ -15,20 +14,35 @@ phases:
       - echo "master"
       - echo "$ENVIRONMENT_NAME"
       - echo Build started on `date`
-      - echo Build started on `date`
-      - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:master
+
+      # Build images for different services
+      - docker build -t $REPOSITORY_URI:web -f project/Dockerfile.web .
+      - docker build -t $REPOSITORY_URI:worker -f project/Dockerfile.worker .
+      - docker build -t $REPOSITORY_URI:dashboard -f project/Dockerfile.dashboard .
+
+      # Tag images
+      - docker tag $REPOSITORY_URI:web $REPOSITORY_URI:web-$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:web $REPOSITORY_URI:web-master
+      - docker tag $REPOSITORY_URI:worker $REPOSITORY_URI:worker-$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:worker $REPOSITORY_URI:worker-master
+      - docker tag $REPOSITORY_URI:dashboard $REPOSITORY_URI:dashboard-$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:dashboard $REPOSITORY_URI:dashboard-master
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Pushing the Docker images...
-      - docker push $REPOSITORY_URI:latest
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - docker push $REPOSITORY_URI:master
-      - echo Writing image definitions file...
-      - printf '[{"name":"%s","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:master > imagedefinitions.json
+
+      # Push images to ECR
+      - docker push $REPOSITORY_URI:web
+      - docker push $REPOSITORY_URI:worker
+      - docker push $REPOSITORY_URI:dashboard
+      - docker push $REPOSITORY_URI:web-$IMAGE_TAG
+      - docker push $REPOSITORY_URI:worker-$IMAGE_TAG
+      - docker push $REPOSITORY_URI:dashboard-$IMAGE_TAG
+
+      # Writing image definitions file
+      - printf '[{"name":"%s-web","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:web-master > imagedefinitions.json
+      - printf '[{"name":"%s-worker","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:worker-master >> imagedefinitions.json
+      - printf '[{"name":"%s-dashboard","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:dashboard-master >> imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
