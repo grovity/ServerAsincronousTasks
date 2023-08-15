@@ -2,7 +2,7 @@ import os
 import time
 
 from celery import Celery
-from time import time
+from time import sleep
 from functions import obt_video_evento,upload
 import os
 
@@ -19,7 +19,6 @@ def create_task(task_type):
 
 @celery.task(name="transfer")
 def transfer(id_reu):
-    start_time = time()
     try:
         print(f"Descargando reunión {id_reu}")
         obt_video_evento(id_reu)
@@ -37,6 +36,5 @@ def transfer(id_reu):
         print(e)
         raise
 
-    end_time = time()
-    duration = end_time - start_time
+    
     return True
