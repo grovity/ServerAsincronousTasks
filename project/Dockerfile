@@ -1,5 +1,5 @@
 # pull official base image
-FROM public.ecr.aws/docker/library/python:3.11.4
+FROM python:3.11.2-slim-buster
 
 # set work directory
 WORKDIR /usr/src/app
@@ -16,8 +16,5 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
+# copy project
 COPY . .
-
-EXPOSE 8004/tcp
-
-CMD ["uvicorn", "project.main:app", "--host", "0.0.0.0", "--port", "8004"]

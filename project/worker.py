@@ -3,7 +3,7 @@ import time
 
 from celery import Celery
 from time import time
-from functions import obt_video_evento,upload
+from .functions import obt_video_evento,upload
 import os
 
 

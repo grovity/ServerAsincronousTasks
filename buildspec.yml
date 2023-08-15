@@ -1,5 +1,6 @@
 version: 0.2
 
+
 phases:
   pre_build:
     commands:
@@ -14,17 +15,18 @@ phases:
       - echo "master"
       - echo "$ENVIRONMENT_NAME"
       - echo Build started on `date`
-
-      # Build and push the images for all services
+      - echo Build started on `date`
+      - echo Building the Docker image...
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:master
-
+  post_build:
+    commands:
+      - echo Build completed on `date`
       - echo Pushing the Docker images...
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - docker push $REPOSITORY_URI:master
-
       - echo Writing image definitions file...
       - printf '[{"name":"%s","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:master > imagedefinitions.json
       - cat imagedefinitions.json
