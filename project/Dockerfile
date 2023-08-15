@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.11.2-slim-buster
+FROM public.ecr.aws/docker/library/python:3.11.4
 
 # set work directory
 WORKDIR /usr/src/app
@@ -17,11 +17,12 @@ COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 RUN apt-get update && apt-get install -y openssh-server
 RUN echo 'root:Imuko$4587' | chpasswd
+RUN mkdir /var/run/sshd
 
 COPY . .
 
 EXPOSE 8004/tcp
 EXPOSE 5556/tcp
-EXPOSE 22/tcp
+EXPOSE 22
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004"]
+#CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004"]
