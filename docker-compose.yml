@@ -8,10 +8,10 @@ services:
       - 8004:8000
     command: uvicorn main:app --host 0.0.0.0 --reload --log-level
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://0.0.0.0:8000"]
-      interval: 10s
+      test: ["CMD-SHELL", "curl -f http://localhost:8004/"]
+      interval: 30s
       timeout: 5s
-      retries: 5
+      retries: 3
     volumes:
       - ./project:/usr/src/app
     environment:
