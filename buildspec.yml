@@ -6,10 +6,8 @@ phases:
       python: 3.9
 
   pre_build:
-    commands:
+    ccommands:
       - echo "Starting pre-build phase..."
-      - yum update -y
-      - amazon-linux-extras enable docker
       - yum install docker -y
       - service docker start
 
