@@ -8,7 +8,6 @@ phases:
   pre_build:
     commands:
       - echo "Starting pre-build phase..."
-      - yum update -y
       - yum install docker -y
       - nohup dockerd &
 
@@ -23,7 +22,8 @@ phases:
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
       - docker-compose -f project/docker-compose.yml push
       - echo '[{"name":"web","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest"},{"name":"worker","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks-worker:latest"},{"name":"dashboard","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks-dashboard:latest"}]' > imagedefinitions.json
-      - aws s3 cp imagedefinitions.json s3://codepipeline-us-east-1-927243010215/asynchronous-tasks/BuildArtif/imagedefinitions.json
 
 artifacts:
-  files: project/docker-compose.yml
+  files:
+    - project/docker-compose.yml
+    - imagedefinitions.json
