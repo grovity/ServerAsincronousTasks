@@ -10,18 +10,17 @@ phases:
       - echo "Starting pre-build phase..."
       - yum install docker -y
       - nohup dockerd &
-      - REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
-      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      - export REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
+      - export IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
 
   build:
     commands:
       - echo "Starting build phase..."
       - export REPOSITORY_URI="$REPOSITORY_URI"
       - docker-compose -f project/docker-compose.yml build
+      - docker tag "project_web:latest" "$REPOSITORY_URI:$IMAGE_TAG"
+      - docker tag "$REPOSITORY_URI:latest" "$REPOSITORY_URI:master"
       - docker images
-      - docker tag "$REPOSITORY_URI":latest "$REPOSITORY_URI:$IMAGE_TAG"
-      - docker tag "$REPOSITORY_URI":latest "$REPOSITORY_URI:master"
-      
 
   post_build:
     commands:
