@@ -18,10 +18,11 @@ phases:
       - echo "Starting build phase..."
       - export REPOSITORY_URI="$REPOSITORY_URI"
       - docker-compose -f project/docker-compose.yml build
+      - docker images
       - docker tag "$REPOSITORY_URI":latest "$REPOSITORY_URI:$IMAGE_TAG"
       - docker tag "$REPOSITORY_URI":latest "$REPOSITORY_URI:master"
-      - docker images
       
+
   post_build:
     commands:
       - echo "Starting post-build phase..."
