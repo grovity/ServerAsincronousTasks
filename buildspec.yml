@@ -13,12 +13,13 @@ phases:
       - REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
 
-  build:
-    commands:
-      - echo "Starting build phase..."
-      - docker-compose -f project/docker-compose.yml build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:master
+ build:
+  commands:
+    - echo "Starting build phase..."
+    - docker-compose -f project/docker-compose.yml build -t "$REPOSITORY_URI":latest .
+    - docker tag "$REPOSITORY_URI":latest "$REPOSITORY_URI":"$IMAGE_TAG"
+    - docker tag "$REPOSITORY_URI":latest "$REPOSITORY_URI":master
+
 
       # Crear el archivo imagedefinitions.json en la imagen de CodeBuild
       - echo '[{"name":"web","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest"},{"name":"worker","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest"},{"name":"dashboard","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest"},{"name":"redis","imageUri":"redis:7"}]' > imagedefinitions.json
