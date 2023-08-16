@@ -4,37 +4,23 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws --version
-      - $(aws ecr get-login --region us-east-1 --no-include-email)
-      - REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
-      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      - $(aws ecr get-login --no-include-email --region us-east-1)
   build:
     commands:
-      - echo "master"
-      - echo "$ENVIRONMENT_NAME"
-      - echo Build started on `date`
-
-      # Build the single container image
-      - docker build -t $REPOSITORY_URI:master -f project/Dockerfile .
-
-      # Tag the image
-      - docker tag $REPOSITORY_URI:master $REPOSITORY_URI:$IMAGE_TAG
+      - echo Building the Docker image...
+      - docker build -t asynchronous-tasks-image -f project/Dockerfile .
+      - docker tag asynchronous-tasks-image:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
+      - docker tag asynchronous-tasks-image:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master
   post_build:
     commands:
-      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
+      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master
+      - echo Writing image definitions file...
+      - printf '[{"name":"web-service","imageUri":"%s"}]' 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master > imagedefinitions.json
+      - printf ',\n{"name":"worker-service","imageUri":"%s"}' 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master >> imagedefinitions.json
+      - printf ',\n{"name":"dashboard-service","imageUri":"%s"}]' 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master >> imagedefinitions.json
+      - cat imagedefinitions.json
 
-      # Push the image to ECR
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - docker push $REPOSITORY_URI:master
-
-      # Writing image definitions file for each service
-      - printf '[{"name":"web-task","imageUri":"%s"}]' $REPOSITORY_URI:master > imagedefinitions-web.json
-      - printf '[{"name":"worker-task","imageUri":"%s"}]' $REPOSITORY_URI:master > imagedefinitions-worker.json
-      - printf '[{"name":"dashboard-task","imageUri":"%s"}]' $REPOSITORY_URI:master > imagedefinitions-dashboard.json
-      - cat imagedefinitions-*.json
 artifacts:
-    files:
-      - imagedefinitions-web.json
-      - imagedefinitions-worker.json
-      - imagedefinitions-dashboard.json
+  files: imagedefinitions.json
