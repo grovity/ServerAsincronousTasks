@@ -19,12 +19,12 @@ phases:
       - docker-compose -f project/docker-compose.yml build -t "$REPOSITORY_URI":latest .
       - docker tag "$REPOSITORY_URI":latest "$REPOSITORY_URI":"$IMAGE_TAG"
       - docker tag "$REPOSITORY_URI":latest "$REPOSITORY_URI":master
-      - echo '[{"name":"web","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest"},{"name":"worker","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest"},{"name":"dashboard","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest"},{"name":"redis","imageUri":"redis:7"}]' > imagedefinitions.json
+      - echo '[{"name":"web","imageUri":$REPOSITORY_URI:master},{"name":"worker","imageUri":$REPOSITORY_URI:master},{"name":"dashboard","imageUri":$REPOSITORY_URI:master},{"name":"redis","imageUri":"redis:7"}]' > imagedefinitions.json
   
   post_build:
     commands:
       - echo "Starting post-build phase..."
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URI
       - docker-compose -f project/docker-compose.yml push
 
 artifacts:
