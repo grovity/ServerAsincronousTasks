@@ -21,7 +21,7 @@ phases:
       - echo "Starting post-build phase..."
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
       - docker-compose -f project/docker-compose.yml push
-      - echo '[{"name":"web","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest"},{"name":"worker","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks-worker:latest"},{"name":"dashboard","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks-dashboard:latest"}]' > imagedefinitions.json
+      - echo '[{"name":"asynchronous-tasks","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest"},{"name":"worker","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks-worker:latest"},{"name":"dashboard","imageUri":"235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks-dashboard:latest"}]' > imagedefinitions.json
 
 artifacts:
   files:
