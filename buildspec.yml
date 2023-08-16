@@ -15,12 +15,15 @@ phases:
 
   build:
     commands:
-      - echo "Starting build phase..."
-      - export REPOSITORY_URI="$REPOSITORY_URI"
-      - docker-compose -f project/docker-compose.yml build
-      - docker tag "project_web:latest" "$REPOSITORY_URI:$IMAGE_TAG"
-      - docker tag "$REPOSITORY_URI:latest" "$REPOSITORY_URI:master"
-      - docker images
+      - echo "master"
+      - echo "$ENVIRONMENT_NAME"
+      - echo Build started on `date`
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker-compose -f project/docker-compose.yml build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:master
+    
 
   post_build:
     commands:
