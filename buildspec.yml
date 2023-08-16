@@ -16,33 +16,33 @@ phases:
       - echo Build started on `date`
 
       # Build images for different services
-      - docker build -t $REPOSITORY_URI:web -f project/Dockerfile.web .
-      - docker build -t $REPOSITORY_URI:worker -f project/Dockerfile.worker .
-      - docker build -t $REPOSITORY_URI:dashboard -f project/Dockerfile.dashboard .
+      - docker build -t $REPOSITORY_URI:web-service -f project/Dockerfile.web .
+      - docker build -t $REPOSITORY_URI:worker-service -f project/Dockerfile.worker .
+      - docker build -t $REPOSITORY_URI:dashboard-service -f project/Dockerfile.dashboard .
 
       # Tag images
-      - docker tag $REPOSITORY_URI:web $REPOSITORY_URI:web-$IMAGE_TAG
-      - docker tag $REPOSITORY_URI:web $REPOSITORY_URI:web-master
-      - docker tag $REPOSITORY_URI:worker $REPOSITORY_URI:worker-$IMAGE_TAG
-      - docker tag $REPOSITORY_URI:worker $REPOSITORY_URI:worker-master
-      - docker tag $REPOSITORY_URI:dashboard $REPOSITORY_URI:dashboard-$IMAGE_TAG
-      - docker tag $REPOSITORY_URI:dashboard $REPOSITORY_URI:dashboard-master
+      - docker tag $REPOSITORY_URI:web-service $REPOSITORY_URI:web-service-$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:web-service $REPOSITORY_URI:web-service-master
+      - docker tag $REPOSITORY_URI:worker-service $REPOSITORY_URI:worker-service-$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:worker-service $REPOSITORY_URI:worker-service-master
+      - docker tag $REPOSITORY_URI:dashboard-service $REPOSITORY_URI:dashboard-service-$IMAGE_TAG
+      - docker tag $REPOSITORY_URI:dashboard-service $REPOSITORY_URI:dashboard-service-master
   post_build:
     commands:
       - echo Build completed on `date`
 
       # Push images to ECR
-      - docker push $REPOSITORY_URI:worker
-      - docker push $REPOSITORY_URI:dashboard
-      - docker push $REPOSITORY_URI:web-$IMAGE_TAG
-      - docker push $REPOSITORY_URI:worker-$IMAGE_TAG
-      - docker push $REPOSITORY_URI:dashboard-$IMAGE_TAG
-      - docker push $REPOSITORY_URI:web
+      - docker push $REPOSITORY_URI:worker-service
+      - docker push $REPOSITORY_URI:dashboard-service
+      - docker push $REPOSITORY_URI:web-service-$IMAGE_TAG
+      - docker push $REPOSITORY_URI:worker-service-$IMAGE_TAG
+      - docker push $REPOSITORY_URI:dashboard-service-$IMAGE_TAG
+      - docker push $REPOSITORY_URI:web-service
 
       # Writing image definitions file
-      - printf '[{"name":"%s","imageUri":"%s"}]' web-service $REPOSITORY_URI:web-master > imagedefinitions.json
-      - printf '[{"name":"%s","imageUri":"%s"}]' worker-service $REPOSITORY_URI:worker-master >> imagedefinitions.json
-      - printf '[{"name":"%s","imageUri":"%s"}]' dashboard-service $REPOSITORY_URI:dashboard-master >> imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' "web-task" "$REPOSITORY_URI:web-service-master" > imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' "worker-service" "$REPOSITORY_URI:worker-service-master" >> imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' "dashboard-service" "$REPOSITORY_URI:dashboard-service-master" >> imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
