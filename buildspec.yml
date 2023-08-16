@@ -8,9 +8,9 @@ phases:
   build:
     commands:
       - echo Building the Docker image...
-      - docker build -t asynchronous-tasks-image -f project/Dockerfile .
-      - docker tag asynchronous-tasks-image:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
-      - docker tag asynchronous-tasks-image:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master
+      - docker build -t asynchronous-tasks -f project/Dockerfile .
+      - docker tag asynchronous-tasks:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
+      - docker tag asynchronous-tasks:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master
   post_build:
     commands:
       - echo Pushing the Docker images...
