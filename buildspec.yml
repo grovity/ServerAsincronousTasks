@@ -1,18 +1,15 @@
 version: 0.2
 
-phases:
-  install:
-    runtime-versions:
-      python: 3.9
 
+phases:
   pre_build:
     commands:
-      - echo "Starting pre-build phase..."
-      - yum install docker -y
-      - nohup dockerd &
-      - export REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
-      - export IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
-
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - $(aws ecr get-login --region us-east-1 --no-include-email)
+      - REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
       - echo "master"
@@ -23,15 +20,15 @@ phases:
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:master
-    
-
   post_build:
     commands:
-      - echo "Starting post-build phase..."
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$REPOSITORY_URI"
-      - docker-compose -f project/docker-compose.yml push
-
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI:master
+      - echo Writing image definitions file...
+      - printf '[{"name":"%s","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:master > imagedefinitions.json
+      - cat imagedefinitions.json
 artifacts:
-  files:
-    - project/docker-compose.yml
-    - imagedefinitions.json
+    files: imagedefinitions.json
