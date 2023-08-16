@@ -4,22 +4,30 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - $(aws ecr get-login --no-include-email --region us-east-1)
+      - aws --version
+      - $(aws ecr get-login --region us-east-1 --no-include-email)
+      - REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
+      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
-      - echo Building the Docker image...
-      - docker build -t asynchronous-tasks -f project/Dockerfile .
-      - docker tag asynchronous-tasks:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
-      - docker tag asynchronous-tasks:latest 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master
+      - echo Build started on `date`
+
+      # Build Docker image
+      - docker build -t $REPOSITORY_URI:latest .
+
+      # Tag image
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+
   post_build:
     commands:
-      - echo Pushing the Docker images...
-      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:latest
-      - docker push 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master
-      - echo Writing image definitions file...
-      - printf '[{"name":"web-service","imageUri":"%s"}]' 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master > imagedefinitions.json
-      - printf ',\n{"name":"worker-service","imageUri":"%s"}' 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master >> imagedefinitions.json
-      - printf ',\n{"name":"dashboard-service","imageUri":"%s"}]' 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks:master >> imagedefinitions.json
+      - echo Build completed on `date`
+
+      # Push image to ECR
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+
+      # Writing image definitions file
+      - printf '[{"name":"%s","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - cat imagedefinitions.json
 
 artifacts:
