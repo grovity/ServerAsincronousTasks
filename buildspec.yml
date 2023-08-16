@@ -10,6 +10,7 @@ phases:
       - echo "Starting pre-build phase..."
       - yum install docker -y
       - nohup dockerd &
+      - REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
 
   build:
     commands:
