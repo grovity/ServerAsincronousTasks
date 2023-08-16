@@ -15,34 +15,26 @@ phases:
       - echo "$ENVIRONMENT_NAME"
       - echo Build started on `date`
 
-      # Build images for different services
-      - docker build -t $REPOSITORY_URI:web-service -f project/Dockerfile.web .
-      - docker build -t $REPOSITORY_URI:worker-service -f project/Dockerfile.worker .
-      - docker build -t $REPOSITORY_URI:dashboard-service -f project/Dockerfile.dashboard .
+      # Build the single container image
+      - docker build -t $REPOSITORY_URI:master .
 
-      # Tag images
-      - docker tag $REPOSITORY_URI:web-service $REPOSITORY_URI:web-service-$IMAGE_TAG
-      - docker tag $REPOSITORY_URI:web-service $REPOSITORY_URI:web-service-master
-      - docker tag $REPOSITORY_URI:worker-service $REPOSITORY_URI:worker-service-$IMAGE_TAG
-      - docker tag $REPOSITORY_URI:worker-service $REPOSITORY_URI:worker-service-master
-      - docker tag $REPOSITORY_URI:dashboard-service $REPOSITORY_URI:dashboard-service-$IMAGE_TAG
-      - docker tag $REPOSITORY_URI:dashboard-service $REPOSITORY_URI:dashboard-service-master
+      # Tag the image
+      - docker tag $REPOSITORY_URI:master $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
 
-      # Push images to ECR
-      - docker push $REPOSITORY_URI:worker-service
-      - docker push $REPOSITORY_URI:dashboard-service
-      - docker push $REPOSITORY_URI:web-service-$IMAGE_TAG
-      - docker push $REPOSITORY_URI:worker-service-$IMAGE_TAG
-      - docker push $REPOSITORY_URI:dashboard-service-$IMAGE_TAG
-      - docker push $REPOSITORY_URI:web-service
+      # Push the image to ECR
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI:master
 
-      # Writing image definitions file
-      - printf '[{"name":"%s","imageUri":"%s"}]' "web-task" "$REPOSITORY_URI:web-service-master" > imagedefinitions.json
-      - printf '[{"name":"%s","imageUri":"%s"}]' "worker-service" "$REPOSITORY_URI:worker-service-master" >> imagedefinitions.json
-      - printf '[{"name":"%s","imageUri":"%s"}]' "dashboard-service" "$REPOSITORY_URI:dashboard-service-master" >> imagedefinitions.json
-      - cat imagedefinitions.json
+      # Writing image definitions file for each service
+      - printf '[{"name":"web-task","imageUri":"%s"}]' $REPOSITORY_URI:master > imagedefinitions-web.json
+      - printf '[{"name":"worker-task","imageUri":"%s"}]' $REPOSITORY_URI:master > imagedefinitions-worker.json
+      - printf '[{"name":"dashboard-task","imageUri":"%s"}]' $REPOSITORY_URI:master > imagedefinitions-dashboard.json
+      - cat imagedefinitions-*.json
 artifacts:
-    files: imagedefinitions.json
+    files:
+      - imagedefinitions-web.json
+      - imagedefinitions-worker.json
+      - imagedefinitions-dashboard.json
