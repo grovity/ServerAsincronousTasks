@@ -16,11 +16,11 @@ phases:
   build:
     commands:
       - echo "Starting build phase..."
-      - docker-compose -f project/docker-compose.yml build -t "$REPOSITORY_URI":latest .
-      - docker images  # Add this line to list Docker images for debugging
-      - docker tag "$REPOSITORY_URI":latest "$REPOSITORY_URI:master"
-      - echo '[{"name":"web","imageUri":"'$REPOSITORY_URI:$IMAGE_TAG'"},{"name":"worker","imageUri":"'$REPOSITORY_URI:$IMAGE_TAG'"},{"name":"dashboard","imageUri":"'$REPOSITORY_URI:$IMAGE_TAG'"},{"name":"redis","imageUri":"redis:7"}]' > imagedefinitions.json
-  
+      - docker-compose -f project/docker-compose.yml build --build-arg REPOSITORY_URI="$REPOSITORY_URI"
+      - docker tag "$REPOSITORY_URI":latest "$REPOSITORY_URI:$IMAGE_TAG"
+      - docker tag "$REPOSITORY_URI":latest "$REPOSITORY_URI":master
+      - docker images
+
   post_build:
     commands:
       - echo "Starting post-build phase..."
