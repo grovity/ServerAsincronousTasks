@@ -1,30 +1,27 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      python: 3.8
+
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
-      - aws --version
-      - $(aws ecr get-login --region us-east-1 --no-include-email)
-      - REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
-      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      - echo "Starting pre-build phase..."
+      - apt-get update -y
+      - apt-get install -y docker.io
+
   build:
     commands:
-      - echo Build started on `date`
-
-      # Build Docker image
-      - docker build -t $REPOSITORY_URI:$IMAGE_TAG -f project/Dockerfile .
+      - echo "Starting build phase..."
+      - docker-compose -f project/docker-compose.yml build
 
   post_build:
     commands:
-      - echo Build completed on `date`
-
-      # Push image to ECR
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
-
-      # Writing image definitions file
-      - printf '[{"name":"%s","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-      - cat imagedefinitions.json
+      - echo "Starting post-build phase..."
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
+      - docker-compose -f project/docker-compose.yml push
 
 artifacts:
-  files: imagedefinitions.json
+  files: project/docker-compose.yml
+
