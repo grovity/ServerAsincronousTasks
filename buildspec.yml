@@ -11,6 +11,7 @@ phases:
       - yum install docker -y
       - nohup dockerd &
       - REPOSITORY_URI=235640865704.dkr.ecr.us-east-1.amazonaws.com/asynchronous-tasks
+      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
 
   build:
     commands:
