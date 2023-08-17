@@ -14,8 +14,8 @@ from tqdm import tqdm
 import logging
 import os
 from typing import TypeVar, cast, Dict, List
-from drive_api import DriveAPI
-from drive_api_exception import DriveAPIException
+from .drive_api import DriveAPI
+from .drive_api_exception import DriveAPIException
 
 #token = "00"#"eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6IlVFZDBaYV9lVHZxMkFDMWZDNUUtZFEiLCJleHAiOjE2Nzk0MTM4NzQsImlhdCI6MTY3ODgwOTA3NH0.ukP8Ja05WXgbvC-_UgmJF5kh6R_RQ5qUOCmjAiV6eE0"
 API_SECRET = os.environ ["API_SECRET_ZOOM"]#"p2juMvG4ifA9x8StadY1lixePaH7Z7nMQuNy"
