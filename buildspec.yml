@@ -28,5 +28,7 @@ phases:
       - echo Writing image definitions file...
       - printf '[{"name":"%s","imageUri":"%s"}]' asynchronous-tasks $REPOSITORY_URI:master > imagedefinitions.json
       - cat imagedefinitions.json
+      - echo "Pinging the application..."
+      - ping -c 5 localhost
 artifacts:
     files: imagedefinitions.json
