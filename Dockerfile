@@ -21,4 +21,4 @@ COPY . .
 EXPOSE 8004/tcp
 EXPOSE 5556/tcp
 
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8004 & celery --broker=redis://redis:6379/0 flower --port=5556 & celery -A worker.celery worker --loglevel=info --logfile=logs/celery.log"]
+CMD ["uvicorn", "project.main:app", "--host", "0.0.0.0", "--port", "8004"]
