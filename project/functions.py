@@ -98,7 +98,7 @@ def obt_video_evento(meeting):
 
 
 def upload(id_reunion):
-    drive_api = DriveAPI("client_secret.json","/tmp")  # This should open a prompt.
+    drive_api = DriveAPI("credenciales-cta-servicio.json","/tmp")  # This should open a prompt.
     try:
         
         # Get url from upload function.

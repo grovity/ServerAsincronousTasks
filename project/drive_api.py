@@ -22,6 +22,7 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from google.oauth2 import service_account
 
 from .configuration_interfaces import DriveConfig, SystemConfig, APIConfigBase
 
@@ -41,7 +42,7 @@ class DriveAPI:
     self.drive_config = cast(DriveConfig, drive_config)
     self.sys_config = cast(SystemConfig, sys_config)
 
-    self._scopes = ['https://www.googleapis.com/auth/drive.file']
+    self._scopes = ['https://www.googleapis.com/auth/drive.file','https://www.googleapis.com/auth/drive','https://www.googleapis.com/auth/drive.file','https://www.googleapis.com/auth/drive.metadata']
     self._service = None
 
     self.setup()
@@ -51,24 +52,15 @@ class DriveAPI:
     a link within a web browser in order to work.
     """
     creds = None
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file(
-          "token.json", self._scopes
-        )
+    credentials_file = 'credenciales-cta-servicio.json'
+        
+    # Define los alcances (scopes) necesarios para el servicio que vas a utilizar
+    self._scopes = ['https://www.googleapis.com/auth/drive.file','https://www.googleapis.com/auth/drive','https://www.googleapis.com/auth/drive.file','https://www.googleapis.com/auth/drive.metadata']
 
-
-
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                self.drive_config, self._scopes)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-
+    # Carga las credenciales de servicio desde el archivo JSON
+    creds = service_account.Credentials.from_service_account_file(
+        credentials_file, scopes=self._scopes
+    )
 
     self._service = build('drive', 'v3', credentials=creds)
 
@@ -89,6 +81,7 @@ class DriveAPI:
 
     if not file_path or not os.path.exists(file_path):
       # Raise an exception if the specified file doesn't exist.
+      print("No encuentra el archivo en el proyecto")
       raise DriveAPIException(
           name='File error', reason=f'{file_path} could not be found.')
 

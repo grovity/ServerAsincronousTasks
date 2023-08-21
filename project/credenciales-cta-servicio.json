@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "zoomdrive-transfer",
+  "private_key_id": "f5b92a051789c49ee829dc1267335b0f21b07267",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDE1Btexo735vIo\n+E8uX1cCj6NLx8wRLs3vQC8MfqVcaD0qSLRwJuCQucudxYt2xlUrjJ0WCxEjnY0r\n2G0EjYFF9uaUBtb3Vu/cNN2x7KC9DdeeogCP1W1wPF2BEpdviwHyi4mNxdG/Udb6\nYnRByK1wwIC3w5qMoG0GrHibt+dHLN5z/t1GdA75oabVQUxy0DtaA0clSmYcHx83\n4hXjXV7vL1WAQa1fPz3efcjQoYZWmaDh+B57xWy4Qv18uZRv2bca/h0B1E9MFZ7P\nYBMDFqUoGOb1MQuyh8FnI62DVLThkrc/SCDe3ZI99VMiwsv7YlmNRtkay2/a4DPi\n6cTE5PUDAgMBAAECggEAJE6f8d6clrwCJW6QZJRvn2hRjfP//5dro1tqklp2NFKC\nHd+lcR6qw+eR2LuM208AfPUGMP+/nJs+ZD0a9wEHPJmrtNiCJMPjoPIbhuuIRvdb\ns8ZcZivPcSmhceK1Dn1M0anNqNo5s5nsFum8WjojTC4mUD+DrbcWBWohIVBOGEGq\neCC+zbgnMIv4DFS1vllzB7fLlnJy+boD/8PxQgXycW1Nlvasiy+RQX3yZ5euc3ig\n/WRcw2O9x4QwONkXWIPSCS8CoSapF2hiZbbckANJuXwaShQKOxwaCeLvhBxS7pAW\nHnMveGgeZKOQxKdZUGUNkrFZkUSZhMZfUBW68ORB2QKBgQD0HM1d5ABvHFVRZvNO\n+i/WIrAf9vP/JX/0M/pcPJr0kfogmayy5JhjIwTdPqbmVUjc/1y6WSl6VLBSoObJ\nA4Qyk/QvIh3WbHBvwjWdMFIq9DQlZPLpxWQJnCsLVXKKQBWzH0Ann3385wmFQle0\ntgvgp8qGZEPq+q0o52bDrwKA5wKBgQDOadhY0A+cYHCC6UJc3nr4BxbF5F41EX6g\nOwc8KVlkeBtp4MuU0JUvHlcPv8KiT2QGnHa15ux6BH371gO1LN2ABFEQc4nI+2Wz\nkgqgXn3hlxDUJwLE1Q4YBKKARmiy0V4VlY2TkVWSO1RM7f1mAnn8TPRdq1LWRPrG\nkstMq+97hQKBgQCC0aCY7WPyJ3vtaL+BFoBmQCakqqItnLoKc4R6w5vC7yvdJp2v\nLOQhVJX5vuaQTyoCDPNzhe69eP8Y+NNU7AZ/WFymmaDl1S0YJzq2JzwRetcrJwMq\nlja7E67ZnwwH3LoESP4Hfeh1jJbEjD4WQOzyktjs1nSzS21am0+uFG7CBwKBgQCi\n68hn0VGBDF3B9nr68l/9BRtkdywklvprXiwHwFtega6hk10cyMX3uurc826czi0V\nSsooKWzdok4OSI4EorTyJnYVlhxbFpLfeZYJnoudU69kxKXa1o+ZRY890FUzTy4D\nu1dT8pKoKUwQrIglzC6cheEbTe7EUQ3fTl5I1izgQQKBgExbyZ0O3RmdTdFhHo7i\nicdmQ9IkiDYtdPPq0BBR9jdJ2KqVwK5bZ7m4yQgja6zQpUBiEHTiwNcVD2s9SV5g\nQy0m4f6XdBpZckaAiCqp8u1yKanvWlNYGN4sDgs56oYCYVYAqR8ziSXUJxrvjhT/\npF7NOhs6wIh3OhvalG4PfUBe\n-----END PRIVATE KEY-----\n",
+  "client_email": "cuenta-de-servicio-transferenc@zoomdrive-transfer.iam.gserviceaccount.com",
+  "client_id": "110589581701648232520",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/cuenta-de-servicio-transferenc%40zoomdrive-transfer.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
