@@ -9,6 +9,8 @@ import requests
 import dateutil.parser
 import os
 from tqdm import tqdm
+import base64
+from urllib.parse import urljoin
 
 
 import logging
@@ -27,37 +29,58 @@ USUARIO = os.environ["USER_ZOOM"]#"servidor.genie@gmail.com"
 
 
 
-def request_zoom(method, url, payload=None, body=None, exp=0):
-        
-        if not payload:
-            payload = {
-                "exp": int(time()) + 5000,
-                "iss": API_KEY,
-            }
-        token = jwt.encode(payload, API_SECRET, algorithm='HS256')
-        conn = http.client.HTTPSConnection("api.zoom.us")
+def request_zoom(self, method, url, payload=None, body=None, exp=0):
+        base_url = 'https://api.zoom.us/v2'
+        # Replace with your Zoom API credentials
+        client_id = 'LUGBeKh_Q8aETAvtgb0IYw'
+        client_secret = 'YGMh2LrvizqipxXHzSUfZ6vl2AZU4TT8'
+        account_id = 'Fgrn1c2QTgC9mhqtk9xIOQ'
 
-        #print('token', token)
-        if isinstance(token,str):
-            headers = {
-            'authorization': "Bearer " + token,
-            'content-type': "application/json",
+        # Construct the Authorization header
+        auth_header = base64.b64encode((client_id + ':' + client_secret).encode()).decode('utf-8')
+
+        # Construct the request data for obtaining access token
+        token_data = {
+            'grant_type': 'account_credentials',
+            'account_id': account_id,
         }
-        else:
-           headers = {
-                'authorization': "Bearer " + token.decode(),
-                'content-type': "application/json",
+
+        headers = {
+            'Host': 'zoom.us',
+            'Authorization': 'Basic ' + auth_header,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+
+        # Make the POST request to obtain access token
+        token_response = requests.post('https://zoom.us/oauth/token', data=token_data, headers=headers)
+
+        # Parse the token response
+        if token_response.status_code == 200:
+            token_data = token_response.json()
+            access_token = token_data.get('access_token')
+
+            # Construct headers for API requests
+            api_headers = {
+                'Authorization': 'Bearer ' + access_token,
+                'Content-Type':'application/json'
             }
 
-        conn.request(method, url, body, headers=headers)
-        resp = conn.getresponse()
-        status = resp.status
-        resp = resp.read()
+            full_url = urljoin(base_url, url)
 
-        resp = json.loads(resp.decode())
+            if method == 'GET':
+                response = requests.get(full_url, headers=api_headers)
+            elif method == 'POST':
+                response = requests.post(full_url, json=body, headers=api_headers)
+            elif method == 'DELETE':
+                response = requests.delete(full_url, headers=api_headers)
+            else:
+                return None, None, 'Invalid method'
 
 
-        return resp, status, token
+            return response.json(), response.status_code,  access_token
+
+        else:
+            return None, None, 'Authentication failed'
 
 def obt_video_evento(meeting):
         print(API_SECRET)
