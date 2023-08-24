@@ -29,7 +29,7 @@ USUARIO = os.environ["USER_ZOOM"]#"servidor.genie@gmail.com"
 
 
 
-def request_zoom(self, method, url, payload=None, body=None, exp=0):
+def request_zoom(method, url, payload=None, body=None, exp=0):
         base_url = 'https://api.zoom.us/v2'
         # Replace with your Zoom API credentials
         client_id = 'LUGBeKh_Q8aETAvtgb0IYw'
