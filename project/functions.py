@@ -1,28 +1,37 @@
+from moviepy.editor import *
 import http.client
 import json
 import re
 import jwt
 from time import time
+import gdown
+import os
 
 import requests
 
 import dateutil.parser
-import os
 from tqdm import tqdm
 import base64
 from urllib.parse import urljoin
 
 
 import logging
-import os
 from typing import TypeVar, cast, Dict, List
 from .drive_api import DriveAPI
 from .drive_api_exception import DriveAPIException
+
+
+from pydub import AudioSegment
+import openai
+
+
+
 
 #token = "00"#"eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6IlVFZDBaYV9lVHZxMkFDMWZDNUUtZFEiLCJleHAiOjE2Nzk0MTM4NzQsImlhdCI6MTY3ODgwOTA3NH0.ukP8Ja05WXgbvC-_UgmJF5kh6R_RQ5qUOCmjAiV6eE0"
 API_SECRET = os.environ ["API_SECRET_ZOOM"]#"p2juMvG4ifA9x8StadY1lixePaH7Z7nMQuNy"
 API_KEY = os.environ["API_KEY_ZOOM"]#"UEd0Za_eTvq2AC1fC5E-dQ"
 USUARIO = os.environ["USER_ZOOM"]#"servidor.genie@gmail.com"
+OPENAI_API_KEY='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'
 
 
 
@@ -138,5 +147,194 @@ def upload(id_reunion):
 
     except DriveAPIException as e:
         raise e
+    
+def upload_text(id_reunion):
+    drive_api = DriveAPI("credenciales-cta-servicio.json","/tmp")  # This should open a prompt.
+    try:
+        
+        # Get url from upload function.
+        file_url = drive_api.upload_file(f"{id_reunion}_transcript_analized.txt",f"{id_reunion}_transcript_analized.TXT" ,"1TQhEwLGJmXsoOZ4FY818nGIJf_cH9C3Y")
+        # The formatted date/time string to be used for older Slack clients
+        # fall_back = f"{file['date']} UTC"
+
+        # Only post message if the upload worked.
+        # message = (f'The recording of _{file["meeting"]}_ on '
+        #             "_<!date^" + str(file['unix']) + "^{date} at {time}|" + fall_back + ">_"
+        #             f' is <{file_url}| now available>.')
+        print(f"Listo la carga de la transcripcion analizada de la reunión {id_reunion}")
+
+    except DriveAPIException as e:
+        raise e
 
 
+
+
+
+
+
+
+
+def convertir_video_a_mp3(video_archivo):
+
+    """
+    Convierte un archivo de video a un archivo de audio MP3.
+
+    Args:
+        video_archivo (str): Nombre del archivo de video de entrada.
+        audio_archivo (str): Nombre del archivo de audio de salida (MP3).
+
+    Returns:
+        None
+    """
+    try:
+        audio_archivo = f"{video_archivo}.mp3"
+        video_archivo = f"{video_archivo}.mp4"
+        
+        # Carga el video
+        video = VideoFileClip(video_archivo)
+
+        # Extrae el audio del video
+        audio = video.audio
+
+        # Guarda el audio en formato MP3
+        audio.write_audiofile(audio_archivo)
+
+        # Cierra los archivos
+        audio.close()
+        video.close()
+
+        print(f"Archivo de audio '{audio_archivo}' creado con éxito.")
+    except Exception as e:
+        print(f"Error al convertir el video a MP3: {str(e)}")
+
+
+
+
+def eliminar_archivo(archivo):
+    archivo = f"{archivo}.mp3"
+    """
+    Elimina un archivo del sistema.
+
+    Args:
+        archivo (str): Nombre del archivo a eliminar.
+
+    Returns:
+        None
+    """
+    try:
+        import os
+        os.remove(archivo)
+        print(f"Archivo '{archivo}' eliminado con éxito.")
+    except Exception as e:
+        print(f"Error al eliminar el archivo: {str(e)}")
+
+
+
+def split_and_transcribe(input_audio_path):
+    # Cargar el archivo de audio
+    song = AudioSegment.from_file(f"{input_audio_path}.mp3")
+
+    # Obtener la duración total del audio en milisegundos
+    total_duration = len(song)
+
+    # Calcular la cantidad de segmentos necesarios
+    chunk_duration_ms = 10 * 60 * 1000  # 10 minutos en milisegundos
+    num_segments = total_duration // chunk_duration_ms
+
+    # Crear el directorio de salida si no existe
+    os.makedirs("audio_chunks", exist_ok=True)
+
+    # Inicializar una variable para el texto de transcripción
+    full_transcript = ""
+
+    for i in range(num_segments):
+        start_time = i * chunk_duration_ms
+        end_time = (i + 1) * chunk_duration_ms
+        segment = song[start_time:end_time]
+
+        # Exportar el segmento a un archivo temporal
+        temp_audio_file = f"{input_audio_path}_segment__{i + 1}.mp3"
+        segment.export(temp_audio_file, format="mp3")
+
+        # Transcribir el segmento
+        openai.api_key = OPENAI_API_KEY
+        audio_file = open(temp_audio_file, "rb")
+        transcript = openai.Audio.transcribe("whisper-1", audio_file)
+        texto_normal = json.loads(json.dumps(transcript))["text"]
+        
+        print(f"Transcripción para {temp_audio_file}: {texto_normal}")
+
+        # Cerrar el archivo de audio temporal
+        audio_file.close()
+        # Agregar la transcripción al texto completo
+        full_transcript += f" {transcript}\n\n"
+
+        # Eliminar el archivo de audio temporal
+        os.remove(temp_audio_file)
+
+    # Guardar el texto completo de transcripción en un archivo
+    output_txt_path = f"{input_audio_path}_transcript.txt"
+    with open(output_txt_path, "w") as txt_file:
+        txt_file.write(full_transcript)
+    return full_transcript
+
+
+def openai_analyze(transcription):
+    openai.api_key = OPENAI_API_KEY
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-16k",
+        messages=[
+            {"role": "system", "content": "Eres un consultor/mentor que acaba de concluir una asesoría y desea elaborar un informe detallado de las actividades realizadas durante la sesión."},
+            {"role": "user", "content": f"Basándote en la siguiente transcripción de la reunión, por favor, resume de manera concisa, identifica las actividades, compromisos clave, recomendaciones y conclusiones. Transcripción: {transcription}"},
+        ]
+    )
+    return response
+
+
+def openai_resumen(transcription):
+    openai.api_key = OPENAI_API_KEY
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-16k",
+        messages=[
+            {"role": "system", "content": "Estás leyendo la transcripción de una sesión de asesoría"},
+            {"role": "user", "content": f"Basándote en la siguiente transcripción resume el texto con el mayor detalle posible. Transcripción: {transcription}"},
+        ],
+    )
+    return response
+
+
+def dividir_y_analizar_texto(archivo):
+    try:
+        file_path= f"{archivo}_transcript.txt"
+        # Abre el archivo en modo lectura y carga su contenido
+        with open(file_path, 'r', encoding='utf-8') as file:
+            texto = file.read()
+    
+        partes = [texto[i:i+12000] for i in range(0, len(texto), 12000)]
+        
+        resultados_analisis = []
+        resultados_texto_completo = ""
+        
+        for parte in partes:
+            # Analiza cada parte con la API de OpenAI
+            try:
+                resultado_analisis = openai_resumen(parte)
+                if "choices" in resultado_analisis and len(resultado_analisis["choices"]) > 0:
+                    resultados_analisis.append(resultado_analisis["choices"][0]["message"]["content"])
+                    resultados_texto_completo = resultados_texto_completo + resultado_analisis["choices"][0]["message"]["content"]
+                    #print(resultado_analisis)
+            except Exception as e:
+                # Aquí puedes manejar posibles errores, por ejemplo, reintentar o registrar el error.
+                print(f"Error al analizar el texto: {e}")
+        resultados_analisis = openai_analyze(resultados_texto_completo)
+
+        # Guardar el texto completo de transcripción en un archivo
+        output_txt_path = f"{archivo}_transcript_analized.txt"
+        with open(output_txt_path, "w") as txt_file:
+            txt_file.write(resultados_analisis["choices"][0]["message"]["content"])
+
+    except Exception as e:
+        print(f"Error al leer el archivo: {e}")
+        return

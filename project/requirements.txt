@@ -60,3 +60,7 @@ watchfiles==0.18.1
 websockets==10.4
 yarl==1.8.2
 pydantic==1.10.12
+
+ffprobe-python==1.0.3
+openai==0.28.0
+pydub==0.25.1

@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y redis-server
 # Install Python dependencies
 COPY ./requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN apt-get update && apt-get install -y ffmpeg
 
 # Copy the rest of the project
 COPY . .

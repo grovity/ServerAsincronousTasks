@@ -23,6 +23,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.oauth2 import service_account
+from mimetypes import guess_type
 
 from .configuration_interfaces import DriveConfig, SystemConfig, APIConfigBase
 
@@ -66,49 +67,68 @@ class DriveAPI:
 
     log.log(logging.INFO, 'Drive connection established.')
 
+  
+
   def upload_file(self, file_path: str, name: str, folder_id: str) -> str:
-    """Uploads the given file to the specified folder id in Google Drive.
+      """Uploads the given file to the specified folder id in Google Drive.
 
-    :param file_path: Path to file to upload to Google Drive.
-    :param name: Final name of the file
-    :param folder_id: The Google Drive folder to upload the file to
-    :return: The url of the file in Google Drive.
-    """
+      :param file_path: Path to file to upload to Google Drive.
+      :param name: Final name of the file
+      :param folder_id: The Google Drive folder to upload the file to
+      :return: The url of the file in Google Drive.
+      """
+      
+      print(f"Starting upload of file: {file_path}")
 
-    if self._service is None:
-      # Raise an exception if setup() hasn't been run.
-      raise DriveAPIException(name='Service error', reason='setup() method not called.')
+      if self._service is None:
+          # Raise an exception if setup() hasn't been run.
+          raise DriveAPIException(name='Service error', reason='setup() method not called.')
 
-    if not file_path or not os.path.exists(file_path):
-      # Raise an exception if the specified file doesn't exist.
-      print("No encuentra el archivo en el proyecto")
-      raise DriveAPIException(
-          name='File error', reason=f'{file_path} could not be found.')
+      if not file_path or not os.path.exists(file_path):
+          # Raise an exception if the specified file doesn't exist.
+          print("No encuentra el archivo en el proyecto")
+          raise DriveAPIException(
+              name='File error', reason=f'{file_path} could not be found.')
 
-    # Google Drive file metadata
-    metadata = {'name': name, 'parents': [folder_id]}
+      # Google Drive file metadata
+      metadata = {'name': name, 'parents': [folder_id]}
 
-    # Create a new upload of the recording and execute it.
-    media = MediaFileUpload(file_path,
-      mimetype='video/mp4',
-      chunksize=1024*1024,
-      resumable=True
-    )
+      print(f"Guessing MIME type for {file_path}")
+      # Guess the mimetype based on file extension
+      mimetype, _ = guess_type(file_path)
+      if not mimetype:
+          mimetype = "application/octet-stream"  # Tipo MIME genérico para datos binarios
+      print(f"Guessed MIME type: {mimetype}")
 
-    # pylint: disable=no-member
-    request =  self._service.files().create(body=metadata,
-      media_body=media,
-      fields='webViewLink',
-     supportsTeamDrives=True
-    )
-    response = None
-    while response is None:
-      status, response = request.next_chunk()
-      if status:
-        print(f"Uploaded {int(status.progress() * 100)}%")
-    uploaded_file = request.execute()
+      # Create a new upload of the recording and execute it.
+      print(f"Creating MediaFileUpload with MIME type: {mimetype}")
 
-    log.log(logging.INFO, f'File {file_path} uploaded to Google Drive')
+      file_size = os.path.getsize(file_path)
+      resumable_upload = file_size >= 1024 * 1024  # True si es mayor o igual a 1MB
+      print(f"Resumable upload? {resumable_upload}")
+      
+      media = MediaFileUpload(file_path,
+                              mimetype=mimetype,
+                              chunksize=1024*1024,
+                              resumable=resumable_upload
+                              )
 
-    # Return the url to the file that was just uploaded.
-    return uploaded_file.get('webViewLink')
+      request = self._service.files().create(body=metadata,
+                                            media_body=media,
+                                            fields='webViewLink',
+                                            supportsTeamDrives=True
+                                            )
+
+      if resumable_upload:
+          print(f"request {request}")
+          response = None
+          while response is None:
+              status, response = request.next_chunk()
+              if status:
+                  print(f"Uploaded {int(status.progress() * 100)}%")
+      uploaded_file = request.execute()
+
+      log.log(logging.INFO, f'File {file_path} uploaded to Google Drive')
+
+      # Return the url to the file that was just uploaded.
+      return uploaded_file.get('webViewLink')
