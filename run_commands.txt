@@ -1,4 +1,5 @@
 docker build -t asyncronous .
 docker run -d -p 8004:8004 -p 5556:5556 asyncronous
 
-docker build -t asyncronous . && docker run -d -p 8004:8004 -p 5556:5556 asyncronous
+
+docker build -t asyncronous . && docker run -d -p 8004:8004 -p 5556:5556 asyncronous 
