@@ -31,7 +31,7 @@ import openai
 API_SECRET = os.environ ["API_SECRET_ZOOM"]#"p2juMvG4ifA9x8StadY1lixePaH7Z7nMQuNy"
 API_KEY = os.environ["API_KEY_ZOOM"]#"UEd0Za_eTvq2AC1fC5E-dQ"
 USUARIO = os.environ["USER_ZOOM"]#"servidor.genie@gmail.com"
-OPENAI_API_KEY='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'
+OPENAI_API_KEY=os.environ["OPENAI_API_KEY"]
 
 
 
