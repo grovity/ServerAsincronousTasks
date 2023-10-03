@@ -3,3 +3,5 @@ docker run -d -p 8004:8004 -p 5556:5556 asyncronous
 
 
 docker build -t asyncronous . && docker run -d -p 8004:8004 -p 5556:5556 asyncronous 
+docker --build-arg OPENAI_API_KEY=$OPENAI_KEY --build-arg API_KEY_ZOOM=$KEY_ZOOM --build-arg API_SECRET_ZOOM=$SECRET_ZOOM build -t asyncronous . && docker run -d -p 8004:8004 -p 5556:5556 asyncronous 
+docker build --build-arg OPENAI_KEY=%OPENAI_KEY% --build-arg KEY_ZOOM=%KEY_ZOOM% --build-arg SECRET_ZOOM=%SECRET_ZOOM% -t asyncronous . && docker run -d -p 8004:8004 -p 5556:5556 asyncronous
