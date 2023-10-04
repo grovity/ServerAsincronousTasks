@@ -3,7 +3,7 @@ import time
 
 from celery import Celery
 from time import sleep
-from .functions import obt_video_evento,upload,convertir_video_a_mp3,split_and_transcribe,dividir_y_analizar_texto,upload_text
+from .functions import obt_video_evento,upload,convertir_video_a_mp3,split_and_transcribe,dividir_y_analizar_texto,upload_text,obt_audio_evento
 import os
 
 
@@ -20,10 +20,9 @@ def create_task(task_type):
 @celery.task(name="transfer")
 def transfer(id_reu):
     try:
-        print(f"Descargando reunión {id_reu}")
-        obt_video_evento(id_reu)
-        print("Conversión a Audio")
-        convertir_video_a_mp3(id_reu)
+        print(f"Descargando reunión video de reunión {id_reu}")
+        obt_video_evento
+        #convertir_video_a_mp3(id_reu)
         print(f"Cargando reunión {id_reu}")
         upload(id_reu)
         f = open('finished.txt', 'a')
@@ -45,8 +44,12 @@ def transfer(id_reu):
 @celery.task(name="transcribe")
 def transcribe(id_reu):
     try:
+        print("Descargando audio de zoom")
+        obt_audio_evento(id_reu)
+        print("Descarga de Zoom Finalizada")
+        print("Transcribiendo")
         split_and_transcribe(id_reu)
-        print("Trasncripcion Finalizada")
+        print("Analizando Transcripción")
         dividir_y_analizar_texto(id_reu)
         print("Analisis de Trascripcion Finalizado")
         upload_text(id_reu)
@@ -54,6 +57,7 @@ def transcribe(id_reu):
         os.remove(f"{id_reu}_transcript_analized.txt")
         os.remove(f"{id_reu}_transcript.txt")
         os.remove(f"{id_reu}.mp3")
+        os.remove(f"{id_reu}.m4a")
         
     except Exception as e:
         f = open('not_finished.txt', 'a')

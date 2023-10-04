@@ -97,6 +97,7 @@ def obt_video_evento(meeting):
         print(API_KEY)
         res, status, token = request_zoom("GET", f"/v2/meetings/{meeting}/recordings")
         full_filename = f"{meeting}.mp4"
+ 
 
         if (status // 100) == 2:
             url = res['recording_files'][0].get('download_url')
@@ -129,6 +130,49 @@ def obt_video_evento(meeting):
             return False
 
 
+def obt_audio_evento(meeting):
+        print(API_SECRET)
+        print("variable")
+        print(API_KEY)
+        res, status, token = request_zoom("GET", f"/v2/meetings/{meeting}/recordings")
+        full_filename = f"{meeting}.m4a"
+       
+        if (status // 100) == 2:
+            
+            for file in range(len(res['recording_files'])):
+                if (res['recording_files'][file].get('recording_type')=='audio_only'):
+                    url = res['recording_files'][file].get('download_url')
+                    if isinstance(token,str):
+                        token_decode = token
+                    else:
+                        token_decode = token.decode()
+                    url = f'{url}?access_token={token_decode}'
+                    url = requests.head(url).headers['Location']
+                    
+                    
+                    response = requests.get(url, stream=True)
+                    block_size = 32 * 1024  # 32 Kibibytes
+                    total_size = int(response.headers.get('content-length', 0))
+                    break
+            try:
+                t = tqdm(total=total_size, unit='iB', unit_scale=True)
+                with open(full_filename, 'wb') as fd:
+                    # with open(os.devnull, 'wb') as fd:  # write to dev/null when testing
+                    for chunk in response.iter_content(block_size):
+                        t.update(len(chunk))
+                        fd.write(chunk)  # write video chunk to disk
+                print("Descarga Finalizada")
+                t.close()
+                return True
+            except Exception as e:
+                # if there was some exception, print the error and return False
+                print(e)
+                return False
+        else:
+            return False
+
+
+
 def upload(id_reunion):
     drive_api = DriveAPI("credenciales-cta-servicio.json","/tmp")  # This should open a prompt.
     try:
@@ -148,6 +192,24 @@ def upload(id_reunion):
     except DriveAPIException as e:
         raise e
     
+def upload_text(id_reunion):
+    drive_api = DriveAPI("credenciales-cta-servicio.json","/tmp")  # This should open a prompt.
+    try:
+        
+        # Get url from upload function.
+        file_url = drive_api.upload_file(f"{id_reunion}_transcript_analized.txt",f"{id_reunion}_transcript_analized.TXT" ,"1TQhEwLGJmXsoOZ4FY818nGIJf_cH9C3Y")
+        # The formatted date/time string to be used for older Slack clients
+        # fall_back = f"{file['date']} UTC"
+
+        # Only post message if the upload worked.
+        # message = (f'The recording of _{file["meeting"]}_ on '
+        #             "_<!date^" + str(file['unix']) + "^{date} at {time}|" + fall_back + ">_"
+        #             f' is <{file_url}| now available>.')
+        print(f"Listo la carga de la transcripcion analizada de la reunión {id_reunion}")
+
+    except DriveAPIException as e:
+        raise e
+
 def upload_text(id_reunion):
     drive_api = DriveAPI("credenciales-cta-servicio.json","/tmp")  # This should open a prompt.
     try:
@@ -230,9 +292,15 @@ def eliminar_archivo(archivo):
 
 
 
+def convert_m4a_to_mp3(source_file, output_file):
+    audio = AudioSegment.from_file(source_file, format="m4a")
+    audio.export(output_file, format="mp3")
+
 def split_and_transcribe(input_audio_path):
     # Cargar el archivo de audio
+    convert_m4a_to_mp3(f"{input_audio_path}.m4a",f"{input_audio_path}.mp3")
     song = AudioSegment.from_file(f"{input_audio_path}.mp3")
+
 
     # Obtener la duración total del audio en milisegundos
     total_duration = len(song)
@@ -262,7 +330,7 @@ def split_and_transcribe(input_audio_path):
         transcript = openai.Audio.transcribe("whisper-1", audio_file)
         texto_normal = json.loads(json.dumps(transcript))["text"]
         
-        print(f"Transcripción para {temp_audio_file}: {texto_normal}")
+        print(f"Transcripción para {temp_audio_file}, archivo {str(i)} de {str(num_segments)}")
 
         # Cerrar el archivo de audio temporal
         audio_file.close()
