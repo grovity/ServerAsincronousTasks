@@ -215,7 +215,7 @@ def upload_text(id_reunion):
     try:
         
         # Get url from upload function.
-        file_url = drive_api.upload_file(f"{id_reunion}_transcript_analized.txt",f"{id_reunion}_transcript_analized.TXT" ,"1TQhEwLGJmXsoOZ4FY818nGIJf_cH9C3Y")
+        file_url = drive_api.upload_file(f"{id_reunion}.txt",f"{id_reunion}.TXT" ,"1TQhEwLGJmXsoOZ4FY818nGIJf_cH9C3Y")
         # The formatted date/time string to be used for older Slack clients
         # fall_back = f"{file['date']} UTC"
 
