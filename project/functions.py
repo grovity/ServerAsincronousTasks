@@ -197,24 +197,6 @@ def upload_text(id_reunion):
     try:
         
         # Get url from upload function.
-        file_url = drive_api.upload_file(f"{id_reunion}_transcript_analized.txt",f"{id_reunion}_transcript_analized.TXT" ,"1TQhEwLGJmXsoOZ4FY818nGIJf_cH9C3Y")
-        # The formatted date/time string to be used for older Slack clients
-        # fall_back = f"{file['date']} UTC"
-
-        # Only post message if the upload worked.
-        # message = (f'The recording of _{file["meeting"]}_ on '
-        #             "_<!date^" + str(file['unix']) + "^{date} at {time}|" + fall_back + ">_"
-        #             f' is <{file_url}| now available>.')
-        print(f"Listo la carga de la transcripcion analizada de la reunión {id_reunion}")
-
-    except DriveAPIException as e:
-        raise e
-
-def upload_text(id_reunion):
-    drive_api = DriveAPI("credenciales-cta-servicio.json","/tmp")  # This should open a prompt.
-    try:
-        
-        # Get url from upload function.
         file_url = drive_api.upload_file(f"{id_reunion}.txt",f"{id_reunion}.TXT" ,"1TQhEwLGJmXsoOZ4FY818nGIJf_cH9C3Y")
         # The formatted date/time string to be used for older Slack clients
         # fall_back = f"{file['date']} UTC"
@@ -227,10 +209,6 @@ def upload_text(id_reunion):
 
     except DriveAPIException as e:
         raise e
-
-
-
-
 
 
 
@@ -399,7 +377,7 @@ def dividir_y_analizar_texto(archivo):
         resultados_analisis = openai_analyze(resultados_texto_completo)
 
         # Guardar el texto completo de transcripción en un archivo
-        output_txt_path = f"{archivo}_transcript_analized.txt"
+        output_txt_path = f"{archivo}.txt"
         with open(output_txt_path, "w") as txt_file:
             txt_file.write(resultados_analisis["choices"][0]["message"]["content"])
 

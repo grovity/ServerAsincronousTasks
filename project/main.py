@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from celery import Celery
 from pydantic import BaseModel
-from .worker import create_task,transfer,transcribe
+from .worker import create_task,transfer,transcribe,check_task
 
 app = FastAPI()
 """ app.mount("/static", StaticFiles(directory="project/static"), name="static")
@@ -39,7 +39,7 @@ def transcribe_vid(payload = Body(...)):
 
 @app.get("/tasks/{task_id}")
 def get_status(task_id):
-    task_result = AsyncResult(task_id)
+    task_result = check_task(task_id)
     result = {
         "task_id": task_id,
         "task_status": task_result.status,

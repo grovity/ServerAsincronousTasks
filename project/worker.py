@@ -1,6 +1,6 @@
 import os
 import time
-
+from celery.result import AsyncResult
 from celery import Celery
 from time import sleep
 from .functions import obt_video_evento,upload,convertir_video_a_mp3,split_and_transcribe,dividir_y_analizar_texto,upload_text,obt_audio_evento
@@ -17,11 +17,19 @@ def create_task(task_type):
     time.sleep(int(task_type) * 10)
     return True
 
+@celery.task(name="check_task")
+def check_task(task_uuid):
+    try:
+        estado = AsyncResult(task_uuid)
+    except Exception as e:
+        print(e)
+    return estado
+
 @celery.task(name="transfer")
 def transfer(id_reu):
     try:
         print(f"Descargando reunión video de reunión {id_reu}")
-        obt_video_evento
+        obt_video_evento(id_reu)
         #convertir_video_a_mp3(id_reu)
         print(f"Cargando reunión {id_reu}")
         upload(id_reu)
@@ -54,7 +62,7 @@ def transcribe(id_reu):
         print("Analisis de Trascripcion Finalizado")
         upload_text(id_reu)
         print("Carga de Analisis de Trascripcion Finalizado")
-        os.remove(f"{id_reu}_transcript_analized.txt")
+        os.remove(f"{id_reu}.txt")
         os.remove(f"{id_reu}_transcript.txt")
         os.remove(f"{id_reu}.mp3")
         os.remove(f"{id_reu}.m4a")
