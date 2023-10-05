@@ -30,7 +30,7 @@ import openai
 #token = "00"#"eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6IlVFZDBaYV9lVHZxMkFDMWZDNUUtZFEiLCJleHAiOjE2Nzk0MTM4NzQsImlhdCI6MTY3ODgwOTA3NH0.ukP8Ja05WXgbvC-_UgmJF5kh6R_RQ5qUOCmjAiV6eE0"
 API_SECRET = os.environ ["API_SECRET_ZOOM"]#"p2juMvG4ifA9x8StadY1lixePaH7Z7nMQuNy"
 API_KEY = os.environ["API_KEY_ZOOM"]#"UEd0Za_eTvq2AC1fC5E-dQ"
-USUARIO = os.environ["USER_ZOOM"]#"servidor.genie@gmail.com"
+USUARIO = os.environ["USER_ZOOM"]#"servidor.genie@gmail.com" 
 OPENAI_API_KEY=os.environ["OPENAI_API_KEY"]
 
 
