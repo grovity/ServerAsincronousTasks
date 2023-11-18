@@ -2,7 +2,7 @@ import requests
 import os
 
 EMAIL_ADMIN = os.environ["EMAIL_ADMIN"]
-PWSD_ADMIN = os.environ["PWSD_ADMIN"]
+PWSD_ADMIN = os.environ["PWSD_ADMIN"] 
 class ApiClient:
     def __init__(self, host, token):
         self.host = host
