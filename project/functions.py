@@ -228,7 +228,7 @@ def convertir_video_a_mp3(video_archivo):
     """
     try:
         audio_archivo = f"{video_archivo}.mp3"
-        video_archivo = f"{video_archivo}.mp4"
+        video_archivo = f"{video_archivo}.MP4"
         
         # Carga el video
         video = VideoFileClip(video_archivo)
@@ -274,10 +274,20 @@ def convert_m4a_to_mp3(source_file, output_file):
     audio = AudioSegment.from_file(source_file, format="m4a")
     audio.export(output_file, format="mp3")
 
-def split_and_transcribe(input_audio_path):
-    # Cargar el archivo de audio
-    convert_m4a_to_mp3(f"{input_audio_path}.m4a",f"{input_audio_path}.mp3")
-    song = AudioSegment.from_file(f"{input_audio_path}.mp3")
+def split_and_transcribe(input_audio_path,extension):
+
+
+    # Verificar la extensión y realizar la conversión si es necesario
+    if extension == '.m4a':
+        # Convertir a mp3 si la extensión es m4a
+        convert_m4a_to_mp3(f"{input_audio_path}.m4a", f"{input_audio_path}.mp3")
+        song = AudioSegment.from_file(f"{input_audio_path}.mp3")
+    elif extension == '.mp3':
+        # No es necesario convertir, cargar directamente si la extensión es mp3
+        song = AudioSegment.from_file(f"{input_audio_path}.mp3")
+    else:
+        # Extensión no válida
+        raise ValueError("Extensión de archivo no compatible")
 
 
     # Obtener la duración total del audio en milisegundos
@@ -384,3 +394,7 @@ def dividir_y_analizar_texto(archivo):
     except Exception as e:
         print(f"Error al leer el archivo: {e}")
         return
+def dwl_file_drive(meeting_id,extension):
+    drive_api = DriveAPI("credenciales-cta-servicio.json","/tmp")  # This should open a prompt.
+    file_response = drive_api.get_drive_recordings(meeting_id,extension)
+    print(file_response)

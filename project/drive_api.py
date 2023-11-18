@@ -21,10 +21,10 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaFileUpload,MediaIoBaseDownload
 from google.oauth2 import service_account
 from mimetypes import guess_type
-
+import io
 from .configuration_interfaces import DriveConfig, SystemConfig, APIConfigBase
 
 from .drive_api_exception import DriveAPIException
@@ -47,7 +47,6 @@ class DriveAPI:
     self._service = None
 
     self.setup()
-
   def setup(self):
     """Triggers the OAuth2 setup flow for Google API endpoints. Requires the ability to open
     a link within a web browser in order to work.
@@ -66,9 +65,6 @@ class DriveAPI:
     self._service = build('drive', 'v3', credentials=creds)
 
     log.log(logging.INFO, 'Drive connection established.')
-
-  
-
   def upload_file(self, file_path: str, name: str, folder_id: str) -> str:
       """Uploads the given file to the specified folder id in Google Drive.
 
@@ -132,3 +128,56 @@ class DriveAPI:
 
       # Return the url to the file that was just uploaded.
       return uploaded_file.get('webViewLink')
+  def get_drive_recordings(self, meeting_id,extension):
+        if meeting_id:
+            # ID de la carpeta específica a buscar
+            folder_id = "1PoFVsTKGO7aL9Gm380GWN-HQW6KnTHSX"
+
+            # Realizar búsqueda del archivo en la carpeta específica
+            query = f"'{folder_id}' in parents and name='{meeting_id}.{extension}'"
+            page_token = None
+            results = self._service.files().list(
+                q=query,
+                spaces='drive',
+                fields='nextPageToken, files(id, name)',
+                pageToken=page_token,
+                supportsAllDrives=True,
+                includeItemsFromAllDrives=True
+            ).execute()
+
+            # Obtener enlace de descarga del archivo
+            if results.get('files', []):
+                file_id = results['files'][0]['id']
+
+                # Crear permisos para que cualquiera pueda descargar el archivo
+                permission = self._service.permissions().create(
+                    fileId=file_id,
+                    body={'role': 'reader', 'type': 'anyone'},
+                    fields='id',
+                    supportsAllDrives=True
+                ).execute()
+
+                # Crear solicitud de descarga
+                request = self._service.files().get_media(fileId=file_id)
+
+                # Crear un objeto io.BytesIO para escribir el contenido descargado
+                fh = io.BytesIO()
+
+                # Descargar el archivo
+                downloader = MediaIoBaseDownload(fh, request)
+                done = False
+                while not done:
+                    status, done = downloader.next_chunk()
+
+                # Guardar el contenido descargado en un archivo local
+                with open(f"{meeting_id}.{extension}", 'wb') as f:
+                    fh.seek(0)
+                    f.write(fh.read())
+
+                print(f"Archivo descargado exitosamente como {meeting_id}.{extension}")
+            else:
+                print("No se encontró el archivo.")
+
+            return results
+
+        return None

@@ -3,7 +3,7 @@ import time
 from celery.result import AsyncResult
 from celery import Celery
 from time import sleep
-from .functions import obt_video_evento,upload,convertir_video_a_mp3,split_and_transcribe,dividir_y_analizar_texto,upload_text,obt_audio_evento
+from .functions import obt_video_evento,upload,convertir_video_a_mp3,split_and_transcribe,dividir_y_analizar_texto,upload_text,obt_audio_evento,dwl_file_drive
 import os
 
 
@@ -52,20 +52,33 @@ def transfer(id_reu):
 @celery.task(name="transcribe")
 def transcribe(id_reu):
     try:
-        print("Descargando audio de zoom")
-        obt_audio_evento(id_reu)
-        print("Descarga de Zoom Finalizada")
-        print("Transcribiendo")
-        split_and_transcribe(id_reu)
-        print("Analizando Transcripción")
+       
+        if not obt_audio_evento(id_reu):
+            print("Descargando video zoom \n --------------")
+            dwl_file_drive(id_reu,"MP4")
+            print("Descarga de audio Finalizada \n --------------")
+            print("Convirtiendo a audio \n --------------")
+            convertir_video_a_mp3(id_reu)
+            print("Transcribiendo \n --------------")
+            split_and_transcribe(id_reu,".mp3")
+            os.remove(f"{id_reu}.MP4")
+        else:
+            print("Descargando audio de zoom \n --------------")
+            obt_audio_evento(id_reu)
+            print("Transcribiendo \n --------------")
+            split_and_transcribe(id_reu,".m4a")
+            os.remove(f"{id_reu}.m4a")
+
+        print("Analizando Transcripción \n --------------")
         dividir_y_analizar_texto(id_reu)
-        print("Analisis de Trascripcion Finalizado")
+        print("Analisis de Trascripcion Finalizado \n --------------")
         upload_text(id_reu)
-        print("Carga de Analisis de Trascripcion Finalizado")
+        print("Carga de Analisis de Trascripcion Finalizado \n --------------")
+
         os.remove(f"{id_reu}.txt")
         os.remove(f"{id_reu}_transcript.txt")
         os.remove(f"{id_reu}.mp3")
-        os.remove(f"{id_reu}.m4a")
+        
         
     except Exception as e:
         f = open('not_finished.txt', 'a')
