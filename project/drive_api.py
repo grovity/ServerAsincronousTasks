@@ -128,23 +128,22 @@ class DriveAPI:
 
       # Return the url to the file that was just uploaded.
       return uploaded_file.get('webViewLink')
-  def get_drive_recordings(self, meeting_id,extension):
+  def get_drive_recordings(self, meeting_id: str):
         if meeting_id:
-            # ID de la carpeta específica a buscar
+            meeting_id = str(meeting_id)
             folder_id = "1PoFVsTKGO7aL9Gm380GWN-HQW6KnTHSX"
-
-            # Realizar búsqueda del archivo en la carpeta específica
-            query = f"'{folder_id}' in parents and name='{meeting_id}.{extension}'"
-            page_token = None
+            query = f"'{folder_id}' in parents and title='{meeting_id}.MP4'"
+            query2 = f"'{folder_id}' in parents and mimeType contains 'video/'" 
+            print(query)
+            page_token = None 
             results = self._service.files().list(
-                q=query,
+                q=f"'{folder_id}' in parents and name='{meeting_id}.MP4'",
                 spaces='drive',
-                fields='nextPageToken, files(id, name)',
-                pageToken=page_token,
                 supportsAllDrives=True,
-                includeItemsFromAllDrives=True
-            ).execute()
-
+                includeItemsFromAllDrives=True,
+                supportsTeamDrives=True).execute()
+            
+            print(results)
             # Obtener enlace de descarga del archivo
             if results.get('files', []):
                 file_id = results['files'][0]['id']
@@ -170,11 +169,11 @@ class DriveAPI:
                     status, done = downloader.next_chunk()
 
                 # Guardar el contenido descargado en un archivo local
-                with open(f"{meeting_id}.{extension}", 'wb') as f:
+                with open(f"{meeting_id}.MP4", 'wb') as f:
                     fh.seek(0)
                     f.write(fh.read())
 
-                print(f"Archivo descargado exitosamente como {meeting_id}.{extension}")
+                print(f"Archivo descargado exitosamente como {meeting_id}.MP4")
             else:
                 print("No se encontró el archivo.")
 

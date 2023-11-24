@@ -11,7 +11,7 @@ import os
 celery = Celery(__name__)
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379")
 celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
-
+celery.conf.worker_concurrency = 4
 
 @celery.task(name="create_task")
 def create_task(task_type):
@@ -57,22 +57,23 @@ def transfer(id_reu):
 @celery.task(name="transcribe")
 def transcribe(id_reu):
     try:
-       
-        if not obt_audio_evento(id_reu):
+        print("Descargando audio de zoom \n --------------")
+        audio_zoom_status = obt_audio_evento(id_reu)
+        if  audio_zoom_status:
+            print("Transcribiendo \n --------------")
+            split_and_transcribe(id_reu,".m4a")
+            os.remove(f"{id_reu}.m4a")
+
+        else:
             print("Descargando video zoom \n --------------")
-            dwl_file_drive(id_reu,"MP4")
+            dwl_file_drive(id_reu)
             print("Descarga de audio Finalizada \n --------------")
             print("Convirtiendo a audio \n --------------")
             convertir_video_a_mp3(id_reu)
             print("Transcribiendo \n --------------")
             split_and_transcribe(id_reu,".mp3")
             os.remove(f"{id_reu}.MP4")
-        else:
-            print("Descargando audio de zoom \n --------------")
-            obt_audio_evento(id_reu)
-            print("Transcribiendo \n --------------")
-            split_and_transcribe(id_reu,".m4a")
-            os.remove(f"{id_reu}.m4a")
+            
 
         print("Analizando Transcripción \n --------------")
         dividir_y_analizar_texto(id_reu)
@@ -86,7 +87,7 @@ def transcribe(id_reu):
         api_client = ApiClient("https://api.grovity.co", "")  # Deja el token vacío inicialmente
         api_client.login()
         video_update_url = api_client.get_transcrip_status(id_reu)
-        print(video_update_url)
+        print(video_update_url) 
         
         
         

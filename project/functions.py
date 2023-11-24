@@ -136,40 +136,42 @@ def obt_audio_evento(meeting):
         print(API_KEY)
         res, status, token = request_zoom("GET", f"/v2/meetings/{meeting}/recordings")
         full_filename = f"{meeting}.m4a"
-       
-        if (status // 100) == 2:
-            
-            for file in range(len(res['recording_files'])):
-                if (res['recording_files'][file].get('recording_type')=='audio_only'):
-                    url = res['recording_files'][file].get('download_url')
-                    if isinstance(token,str):
-                        token_decode = token
-                    else:
-                        token_decode = token.decode()
-                    url = f'{url}?access_token={token_decode}'
-                    url = requests.head(url).headers['Location']
-                    
-                    
-                    response = requests.get(url, stream=True)
-                    block_size = 32 * 1024  # 32 Kibibytes
-                    total_size = int(response.headers.get('content-length', 0))
-                    break
-            try:
-                t = tqdm(total=total_size, unit='iB', unit_scale=True)
-                with open(full_filename, 'wb') as fd:
-                    # with open(os.devnull, 'wb') as fd:  # write to dev/null when testing
-                    for chunk in response.iter_content(block_size):
-                        t.update(len(chunk))
-                        fd.write(chunk)  # write video chunk to disk
-                print("Descarga Finalizada")
-                t.close()
-                return True
-            except Exception as e:
-                # if there was some exception, print the error and return False
-                print(e)
+        if status>=400:  
+            if (status // 100) == 2:
+                
+                for file in range(len(res['recording_files'])):
+                    if (res['recording_files'][file].get('recording_type')=='audio_only'):
+                        url = res['recording_files'][file].get('download_url')
+                        if isinstance(token,str):
+                            token_decode = token
+                        else:
+                            token_decode = token.decode()
+                        url = f'{url}?access_token={token_decode}'
+                        url = requests.head(url).headers['Location']
+                        
+                        
+                        response = requests.get(url, stream=True)
+                        block_size = 32 * 1024  # 32 Kibibytes
+                        total_size = int(response.headers.get('content-length', 0))
+                        print("Descarga Finalizada1")
+                        break
+                try:
+                    t = tqdm(total=total_size, unit='iB', unit_scale=True)
+                    with open(full_filename, 'wb') as fd:
+                        # with open(os.devnull, 'wb') as fd:  # write to dev/null when testing
+                        for chunk in response.iter_content(block_size):
+                            t.update(len(chunk))
+                            fd.write(chunk)  # write video chunk to disk
+                    print("Descarga Finalizada1")
+                    t.close()
+                    return True
+                except Exception as e:
+                    # if there was some exception, print the error and return False
+                    print(e)
+                    return False
+            else:
                 return False
-        else:
-            return False
+        return False
 
 
 
@@ -394,7 +396,7 @@ def dividir_y_analizar_texto(archivo):
     except Exception as e:
         print(f"Error al leer el archivo: {e}")
         return
-def dwl_file_drive(meeting_id,extension):
+def dwl_file_drive(meeting_id):
     drive_api = DriveAPI("credenciales-cta-servicio.json","/tmp")  # This should open a prompt.
-    file_response = drive_api.get_drive_recordings(meeting_id,extension)
+    file_response = drive_api.get_drive_recordings(meeting_id)
     print(file_response)
