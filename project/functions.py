@@ -407,7 +407,7 @@ def enviar_sms_func(mensaje, telefono):
     "body": f"{mensaje}",
     "recipient": f"+57{telefono}",
     "sender": "PanterMkers" }
-    response = requests.post(url,body=body)
+    response = requests.post(url,data=body)
     if response.status_code == 201:
         respuesta = response.json()
         print("Respuesta de la API:")

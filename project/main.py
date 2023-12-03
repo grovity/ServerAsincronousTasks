@@ -37,7 +37,7 @@ def transcribe_vid(payload = Body(...)):
     return {"task_id": task.id}
 
 @app.post("/enviar_sms", status_code=201)
-def sms(payload = Body(...)):
+def enviar_sms_request(payload = Body(...)):
     mensaje = payload["body"]
     telefono = payload["recipient"]
     task = enviar_sms.delay(mensaje, telefono)  # Enqueue the task asynchronously
