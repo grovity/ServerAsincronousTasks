@@ -32,6 +32,7 @@ API_SECRET = os.environ ["API_SECRET_ZOOM"]#"p2juMvG4ifA9x8StadY1lixePaH7Z7nMQuN
 API_KEY = os.environ["API_KEY_ZOOM"]#"UEd0Za_eTvq2AC1fC5E-dQ"
 USUARIO = os.environ["USER_ZOOM"]#"servidor.genie@gmail.com" 
 OPENAI_API_KEY=os.environ["OPENAI_API_KEY"]
+WEBHOOKCACUMBA = os.environ["WEBHOOKCACUMBA"]
 
 
 
@@ -400,3 +401,17 @@ def dwl_file_drive(meeting_id):
     drive_api = DriveAPI("credenciales-cta-servicio.json","/tmp")  # This should open a prompt.
     file_response = drive_api.get_drive_recordings(meeting_id)
     print(file_response)
+def enviar_sms(mensaje, telefono):
+    url = f"https://acumbamail.com/webhook/incoming/{WEBHOOKCACUMBA}/" 
+    body = {
+    "body": f"{mensaje}",
+    "recipient": f"+57{telefono}",
+    "sender": "PanterMkers" }
+    response = requests.post(url,body=body)
+    if response.status_code == 201:
+        respuesta = response.json()
+        print("Respuesta de la API:")
+        print(respuesta)
+    else:
+        print(f"Error al enviar SMS. Código de estado: {response.status_code}")
+        print(response.text)
