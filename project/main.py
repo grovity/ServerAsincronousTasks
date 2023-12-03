@@ -36,7 +36,7 @@ def transcribe_vid(payload = Body(...)):
     task = transcribe.delay(video_id)  # Enqueue the task asynchronously
     return {"task_id": task.id}
 
-@app.post("/sms", status_code=201)
+@app.post("/enviar_sms", status_code=201)
 def sms(payload = Body(...)):
     mensaje = payload["body"]
     telefono = payload["recipient"]

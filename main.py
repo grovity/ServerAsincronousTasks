@@ -39,7 +39,7 @@ def transcribe_vid(payload = Body(...)):
 
 
 
-@app.post("/sms", status_code=201)
+@app.post("/enviar_sms", status_code=201)
 def enviar_sms(payload = Body(...)):
     mensaje = payload["body"]
     telefono = payload["recipient"]
