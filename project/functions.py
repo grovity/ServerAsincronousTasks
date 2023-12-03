@@ -403,6 +403,7 @@ def dwl_file_drive(meeting_id):
     print(file_response)
 def enviar_sms_func(mensaje, telefono):
     url = f"https://acumbamail.com/webhook/incoming/{WEBHOOKCACUMBA}/" 
+    print(url)
     body = {
     "body": f"{mensaje}",
     "recipient": f"+57{telefono}",
