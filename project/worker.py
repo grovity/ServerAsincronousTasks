@@ -3,7 +3,7 @@ import time
 from celery.result import AsyncResult
 from celery import Celery
 from time import sleep
-from .functions import obt_video_evento,upload,convertir_video_a_mp3,split_and_transcribe,dividir_y_analizar_texto,upload_text,obt_audio_evento,dwl_file_drive,enviar_sms
+from .functions import obt_video_evento,upload,convertir_video_a_mp3,split_and_transcribe,dividir_y_analizar_texto,upload_text,obt_audio_evento,dwl_file_drive,enviar_sms_func
 from .grovity_api import ApiClient
 import os
 
@@ -100,8 +100,8 @@ def transcribe(id_reu):
     return True
 
 
-@celery.task(name="sms")
-def sms(mensaje, telefono):
+@celery.task(name="enviar_sms")
+def enviar_sms(mensaje, telefono):
     try:
         #api_client = ApiClient("https://api.grovity.co", "")  # Deja el token vacío inicialmente
         #api_client.login()

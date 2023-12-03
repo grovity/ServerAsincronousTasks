@@ -401,7 +401,7 @@ def dwl_file_drive(meeting_id):
     drive_api = DriveAPI("credenciales-cta-servicio.json","/tmp")  # This should open a prompt.
     file_response = drive_api.get_drive_recordings(meeting_id)
     print(file_response)
-def enviar_sms(mensaje, telefono):
+def enviar_sms_func(mensaje, telefono):
     url = f"https://acumbamail.com/webhook/incoming/{WEBHOOKCACUMBA}/" 
     body = {
     "body": f"{mensaje}",
