@@ -106,7 +106,7 @@ def enviar_sms(mensaje, telefono):
         #api_client = ApiClient("https://api.grovity.co", "")  # Deja el token vacío inicialmente
         #api_client.login()
         #video_update_url = api_client.get_transcrip_status(id_reu)
-        enviar_sms(mensaje, telefono)
+        enviar_sms_func(mensaje, telefono)
     except Exception as e:
         raise
     return True
