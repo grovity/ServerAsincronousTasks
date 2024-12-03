@@ -101,7 +101,14 @@ def obt_video_evento(meeting):
  
 
         if (status // 100) == 2:
-            url = res['recording_files'][0].get('download_url')
+            recording_files = res['recording_files']
+            for file in recording_files:
+                if file.get('recording_type') == 'shared_screen_with_speaker_view':
+                    url = file.get('download_url')
+                    break
+                else:
+                    url = res['recording_files'][0].get('download_url')
+
             if isinstance(token,str):
                 token_decode = token
             else:
