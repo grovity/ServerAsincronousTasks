@@ -41,5 +41,5 @@ EXPOSE 8004/tcp
 EXPOSE 5556/tcp
 
 # Run the application
-CMD ["sh", "-c", "sed -e 's/^bind.*/bind 127.0.0.1/' /etc/redis/redis.conf > redis.conf && mv redis.conf /etc/redis && service redis-server start && sleep 5 && uvicorn main:app --host 0.0.0.0 --port 8004 & sleep 5 && celery --broker=redis://localhost:6379/0 flower --port=5556 & sleep 5 && celery -A project.worker worker --loglevel=info"]
+CMD ["sh", "-c", "sed -e 's/^bind.*/bind 127.0.0.1/' /etc/redis/redis.conf > redis.conf && mv redis.conf /etc/redis && service redis-server start && sleep 5 && uvicorn project.app:app --host 0.0.0.0 --port 8004 & sleep 5 && celery --broker=redis://localhost:6379/0 flower --port=5556 & sleep 5 && celery -A project.worker worker --loglevel=info"]
 
