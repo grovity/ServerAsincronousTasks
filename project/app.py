@@ -5,17 +5,45 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from celery import Celery
 from pydantic import BaseModel
-from .worker import create_task,transfer,transcribe,check_task,enviar_sms
+from .worker import create_task,transfer,transcribe,check_task,enviar_sms,run_scraper
 
 app = FastAPI()
 """ app.mount("/static", StaticFiles(directory="project/static"), name="static")
 templates = Jinja2Templates(directory="templates") """
 
 
+
+
+class ScrapePayload(BaseModel):
+    sheet_id: str
+    descripcion_empresa: str
+
 @app.get("/")
-async def get_status():
+async def health_check():
     return {"status": "OK"}
 
+
+@app.post("/scrape", status_code=201, summary="Iniciar tarea de Scraping de Convocatorias")
+def start_scrape_task(payload: ScrapePayload):
+    """
+    Recibe un ID de Google Sheet y una descripción de la empresa para iniciar
+    el scraping y análisis de relevancia en segundo plano.
+    """
+    print(f"[API] Petición recibida para la hoja '{payload.sheet_id}'")
+    print(f"[API] Usando descripción de empresa: '{payload.descripcion_empresa}'")
+    
+    # Ahora pasamos ambos argumentos a la tarea de Celery
+    task = run_scraper.delay(payload.sheet_id, payload.descripcion_empresa)
+    
+    return JSONResponse({"task_id": task.id})
+
+# --- Tus endpoints existentes (sin cambios) ---
+@app.post("/tasks", status_code=201)
+def run_task(payload=Body(...)):
+    # ... tu código ...
+    return JSONResponse({"task_id": task.id})
+
+# ... (El resto de tus endpoints: /transfer, /transcribe, /enviar_sms, /tasks/{task_id}) ...
 
 @app.post("/tasks", status_code=201)
 def run_task(payload = Body(...)):

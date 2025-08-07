@@ -110,3 +110,25 @@ def enviar_sms(mensaje, telefono):
     except Exception as e:
         raise
     return True
+
+
+
+
+# --- ▼▼▼ IMPORTAMOS LA LÓGICA DEL SCRAPER ▼▼▼ ---
+from .scraper.scraper_flow import run_full_scrape
+
+
+@celery.task(name="tasks.run_scraper")
+def run_scraper(sheet_id: str, descripcion_empresa: str): # Añadimos el nuevo parámetro
+    """Tarea de Celery que ejecuta el scraping y el análisis de relevancia."""
+    try:
+        print(f"Celery task 'run_scraper' started for sheet ID: {sheet_id}")
+        # Pasamos la descripción recibida a la función principal del scraper
+        run_full_scrape(sheet_id, descripcion_empresa)
+        return {"status": "Complete", "message": "Scraping and analysis finished successfully."}
+    except Exception as e:
+        error_message = f"Celery task 'run_scraper' failed: {str(e)}"
+        print(error_message)
+        raise Exception(error_message)
+
+# ... (tus otras tareas) ...

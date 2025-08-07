@@ -28,11 +28,11 @@ import openai
 
 
 #token = "00"#"eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6IlVFZDBaYV9lVHZxMkFDMWZDNUUtZFEiLCJleHAiOjE2Nzk0MTM4NzQsImlhdCI6MTY3ODgwOTA3NH0.ukP8Ja05WXgbvC-_UgmJF5kh6R_RQ5qUOCmjAiV6eE0"
-API_SECRET = os.environ ["API_SECRET_ZOOM"]#"p2juMvG4ifA9x8StadY1lixePaH7Z7nMQuNy"
-API_KEY = os.environ["API_KEY_ZOOM"]#"UEd0Za_eTvq2AC1fC5E-dQ"
-USUARIO = os.environ["USER_ZOOM"]#"servidor.genie@gmail.com" 
-OPENAI_API_KEY=os.environ["OPENAI_API_KEY"]
-WEBHOOKCACUMBA = os.environ["WEBHOOKCACUMBA"]
+API_SECRET = "p2juMvG4ifA9x8StadY1lixePaH7Z7nMQuNy"#os.environ ["API_SECRET_ZOOM"]#"p2juMvG4ifA9x8StadY1lixePaH7Z7nMQuNy"
+API_KEY = "UEd0Za_eTvq2AC1fC5E-dQ"#os.environ["API_KEY_ZOOM"]#"UEd0Za_eTvq2AC1fC5E-dQ"
+USUARIO = "servidor.genie@gmail.com" #os.environ["USER_ZOOM"]#"servidor.genie@gmail.com"
+OPENAI_API_KEY = "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"  #os.environ["OPENAI_API_KEY"]
+WEBHOOKCACUMBA = "MFo0EhaTiyAExPC2chcssFwFwNunaSFeBqULMx7tW2wPvsHvqEY2dmvMY/0m4VDMK_MeDqZi-BAU9LGA==" #os.environ["WEBHOOKCACUMBA"]
 
 
 
