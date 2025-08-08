@@ -65,3 +65,9 @@ pydub==0.25.1
 
 ffprobe-python==1.0.3
 openai==0.28.0
+selenium
+
+pandas
+gspread
+oauth2client
+  
